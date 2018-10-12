@@ -1,0 +1,32 @@
+{
+  "name": "Application Error (PHP)",
+  "run_at": "response",
+  "find": "many",
+  "request": null,
+  "matches": [
+    {
+      "type": "regex",
+      "location": "body",
+      "match": "(<b>notice</b>:.+?on line <b>\\d+</b>)",
+      "options": [
+        "ignore_case"
+      ]
+    },
+    {
+      "type": "regex",
+      "location": "body",
+      "match": "(<b>warning</b>:.+?on line <b>\\d+</b>)",
+      "options": [
+        "ignore_case"
+      ]
+    },
+    {
+      "type": "regex",
+      "location": "body",
+      "match": "(<b>error</b>:.+?on line <b>\\d+</b>)",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

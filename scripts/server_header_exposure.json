@@ -1,0 +1,16 @@
+{
+  "name": "Server header exposure",
+  "run_at": "response",
+  "find": "once",
+  "request": null,
+  "matches": [
+    {
+      "type": "exists",
+      "location": "headers",
+      "match": "server",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

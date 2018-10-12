@@ -1,0 +1,16 @@
+{
+  "name": "Source Code Disclosure (ASP)",
+  "run_at": "response",
+  "find": "many",
+  "request": null,
+  "matches": [
+    {
+      "type": "contains",
+      "location": "body",
+      "match": "<%",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

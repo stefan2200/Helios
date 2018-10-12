@@ -1,0 +1,20 @@
+{
+  "name": "Remote File Inclusion (Reflected)",
+  "run_at": "request",
+  "find": "many",
+  "request": ["parameters", "cookies"],
+  "data": {
+    "inject_value": "https://api.myip.com/"
+  },
+  "matches": [
+    {
+      "type": "regex",
+      "location": "body",
+      "match": "\"ip\":.+?\"country\"",
+      "name": "Third-Party request data in body",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

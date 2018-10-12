@@ -1,0 +1,23 @@
+{
+  "name": "CGI-bin directory found",
+  "run_at": "fs",
+  "find": "once",
+  "data": {
+    "url": "cgi-bin/",
+    "options": [
+      "rootdir"
+    ]
+  },
+  "request": null,
+  "matches": [
+    {
+      "type": "regex",
+      "location": "body",
+      "match": ".+?",
+      "name": "CGI-bin Directory found",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

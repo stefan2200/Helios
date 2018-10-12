@@ -1,0 +1,20 @@
+{
+  "name":".htaccess discovery",
+  "run_at":"fs",
+  "find":"once",
+  "request":null,
+  "data":{
+    "url":".htaccess"
+  },
+  "matches":[
+    {
+      "type":"equals",
+      "location":"status_code",
+      "match":"200",
+      "name":".htaccess match code 200",
+      "options":[
+        "ignore_case"
+      ]
+    }
+  ]
+}
