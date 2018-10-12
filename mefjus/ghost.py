@@ -6,7 +6,6 @@ import logging
 import sys
 import os
 import threading
-import mefjus.certman
 from miproxy.proxy import RequestInterceptorPlugin, ResponseInterceptorPlugin, AsyncMitmProxy
 from filelock import Timeout, FileLock
 
@@ -198,6 +197,8 @@ class CustomProxy:
 
 class mefjus:
     seen = []
+    ca_dir = "certs"
+    ca_file = "mefjus.pem"
 
     def __init__(self):
         self.p = CustomProxy()
@@ -209,8 +210,10 @@ class mefjus:
         self.p.proxy.server_close()
 
     def run(self, urls):
-        self.p.ca_dir = "certs"
-        self.p.ca_file = "mefjus.pem"
+        self.p.ca_dir = self.ca_dir
+        if not os.path.exists(self.p.ca_dir):
+            os.mkdir(self.p.ca_dir)
+        self.p.ca_file = self.ca_file
         self.p.start()
         for url in urls:
             if type(url) is list:

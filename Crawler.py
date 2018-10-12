@@ -41,6 +41,8 @@ class Crawler:
     is_debug = True
     logger = None
     headers = {}
+    data_dir = "data"
+    write_output = True
 
     def __init__(self, base_url, agent=None):
         self.base_url = base_url
@@ -49,7 +51,7 @@ class Crawler:
         self.scraped_pages = []
         self.to_crawl = Queue()
         self.to_crawl.put([self.base_url, None])
-        self.output_filename = os.path.join('data', 'crawler_%s_%d.json' % (urlparse.urlparse(self.base_url).netloc, time.time()))
+        self.output_filename = os.path.join(self.data_dir, 'crawler_%s_%d.json' % (urlparse.urlparse(self.base_url).netloc, time.time()))
         self.logger = logging.getLogger("Crawler")
         self.logger.setLevel(logging.DEBUG)
         ch = logging.StreamHandler(sys.stdout)
@@ -61,6 +63,10 @@ class Crawler:
         self.logger.debug("Starting Crawler")
         if agent:
             self.headers['User-Agent'] = agent
+            self.logger.debug("Using User-Agent %s for crawling" % agent)
+        if not os.path.exists(self.data_dir):
+            self.logger.info("Data directory %s does not exist, creating")
+            os.mkdir(self.data_dir)
 
     def get_filetype(self, url):
         url = url.split('?')[0]
@@ -164,11 +170,12 @@ class Crawler:
                     job.add_done_callback(self.post_scrape_callback)
                     emptyrun += 1
             except Empty:
-                return
+                break
             except Exception as e:
                 self.logger.warning("Error: %s" % e.message)
                 continue
             self.logger.info("Todo: {0} Done: {1}".format(self.to_crawl.qsize(), len(self.scraped_pages)))
+        if self.write_output:
             output = json.dumps(self.scraped_pages)
             with open(self.output_filename, 'w') as f:
                 f.write(output)
