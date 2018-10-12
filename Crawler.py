@@ -65,7 +65,7 @@ class Crawler:
             self.headers['User-Agent'] = agent
             self.logger.debug("Using User-Agent %s for crawling" % agent)
         if not os.path.exists(self.data_dir):
-            self.logger.info("Data directory %s does not exist, creating")
+            self.logger.info("Data directory %s does not exist, creating" % self.data_dir)
             os.mkdir(self.data_dir)
 
     def get_filetype(self, url):
@@ -103,20 +103,19 @@ class Crawler:
                             self.logger.debug("Url %s will be ignored because key variation limit is exceeded" % url)
                             continue
                         self.url_variations.append([url, checksum])
+
+                # if local link or link on same site root
+                if url.startswith('/') or url.startswith(self.root_url):
+                    url = urlparse.urljoin(rooturl, url)
+                    if [url, None] not in self.scraped_pages:
+                        self.to_crawl.put([url, None])
+                # javascript, raw data, mailto etc..
+                if ':' not in url:
+                    url = urlparse.urljoin(rooturl, url)
+                    if [url, None] not in self.scraped_pages:
+                        self.to_crawl.put([url, None])
         except Exception as e:
             self.logger.warning("Parse error on %s -> %s" % (rooturl, e.message))
-
-
-            # if local link or link on same site root
-            if url.startswith('/') or url.startswith(self.root_url):
-                url = urlparse.urljoin(rooturl, url)
-                if [url, None] not in self.scraped_pages:
-                    self.to_crawl.put([url, None])
-            # javascript, raw data, mailto etc..
-            if ':' not in url:
-                url = urlparse.urljoin(rooturl, url)
-                if [url, None] not in self.scraped_pages:
-                    self.to_crawl.put([url, None])
 
     def get_col(self, arr, col):
         return map(lambda x: x[col], arr)
