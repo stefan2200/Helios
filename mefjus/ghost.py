@@ -102,12 +102,12 @@ class HTTPParser:
         return ""
 
     @staticmethod
-    def string_to_urltree(input, method_https=False):
+    def string_to_urltree(input, use_https=False):
         tree = []
         if input and len(input):
             for row in input.strip().split('\n'):
                 method, host, url, data = row.split('\t')
-                url = "http%s://%s%s" % ("s" if method_https else "", host, url)
+                url = "http%s://%s%s" % ("s" if use_https else "", host, url)
                 if method == "POST" and data != "0":
                     tree.append([url, HTTPParser.params_from_str(data)])
                 else:
@@ -211,11 +211,11 @@ class mefjus:
     driver = None
     show_browser = None
 
-    def __init__(self, logger=logging.INFO, driver_path=None, proxy_port=3333, use_proxy=True):
+    def __init__(self, logger=logging.INFO, driver_path=None, proxy_port=3333, use_proxy=True, use_https=True):
         if use_proxy:
             self.proxy = CustomProxy(logger=logger, proxy_port=proxy_port)
         self.driver = GhostDriverInterface(logger=logger, custom_path=driver_path, proxy_port=proxy_port, use_proxy=use_proxy, show_browser=self.show_browser)
-
+        self.use_https = use_https
     def close(self):
         if self.driver:
             self.driver.close()
@@ -241,6 +241,6 @@ class mefjus:
 
     def read_output(self):
         with open('output.txt') as f:
-            tree = HTTPParser.string_to_urltree(f.read())
+            tree = HTTPParser.string_to_urltree(f.read(), use_https=self.use_https)
             return tree
         return ""

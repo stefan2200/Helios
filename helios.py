@@ -98,7 +98,7 @@ class Helios:
             if self.use_web_driver:
                 self.logger.info("Running GhostDriver")
 
-                m = mefjus(logger=self.log_level, driver_path=self.driver_path, use_proxy=self.use_proxy, proxy_port=self.proxy_port)
+                m = mefjus(logger=self.log_level, driver_path=self.driver_path, use_proxy=self.use_proxy, proxy_port=self.proxy_port, use_https=scope.is_https)
                 m.show_browser = self.driver_show
                 results = m.run(todo)
                 for res in results:
