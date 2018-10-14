@@ -1,6 +1,7 @@
 {
   "name": "WP-Admin login portal",
   "run_at": "fs",
+  "options": ["discovery"],
   "find": "once",
   "data": {
     "url": "wp-login.php",

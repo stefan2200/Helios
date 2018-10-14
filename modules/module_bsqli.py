@@ -10,7 +10,7 @@ class Module(module_base.Base):
     def __init__(self):
         self.name = "Blind SQL Injection"
         self.active = True
-        self.module_types = ['injection', 'heavy_load', 'post']
+        self.module_types = ['injection', 'dangerous']
         self.possibilities = [
             '\' or sleep({sleep_value})--',
             '\' or sleep({sleep_value})\\*',

@@ -19,21 +19,25 @@ class ScriptEngine:
     can_fs = True
     can_exploit = True
     s = None
+    options = None
+    log_level = logging.INFO
 
-    def __init__(self):
+    def __init__(self, options=None, logger=logging.INFO):
         self.logger = self.logger = logging.getLogger("ScriptEngine")
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logger)
         ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logger)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         if not self.logger.handlers:
             self.logger.addHandler(ch)
         self.logger.debug("Starting script parser")
+        self.options = options
+        self.log_level = logger
         self.parse_scripts()
 
     def parse_scripts(self):
-        self.s = ScriptParser()
+        self.s = ScriptParser(logger=self.log_level)
         self.s.load_scripts()
         self.scripts_active = []
         self.scripts_fs = []
@@ -41,6 +45,18 @@ class ScriptEngine:
 
         for script in self.s.scripts:
             matches = []
+            if self.options:
+                if 'all' not in self.options:
+                    if self.options and 'options' in script:
+                        for sub in script['options']:
+                            if str(sub) not in self.options:
+                                self.logger.debug("Disabling script %s because %s is not enabled" % (script['name'], sub))
+                                continue
+            else:
+                if 'options' in script and 'dangerous' in script['options']:
+                    self.logger.debug("Disabling script %s because dangerous flag is present, use --options all or add the dangerous flag to override" % (script['name']))
+                    continue
+
             for x in script['matches']:
                 mobj = MatchObject(
                     mtype=x['type'],
@@ -50,7 +66,8 @@ class ScriptEngine:
                     options=list(x['options'])
                 )
                 matches.append(mobj)
-            scriptdata = {
+
+            script_data = {
                 "name": script['name'],
                 "find": script['find'],
                 "request": script['request'],
@@ -59,12 +76,12 @@ class ScriptEngine:
             }
             if not script['request']:
                 if script['run_at'] == "response":
-                    self.scripts_passive.append(scriptdata)
+                    self.scripts_passive.append(script_data)
                 if script['run_at'] == "fs":
-                    self.scripts_fs.append(scriptdata)
+                    self.scripts_fs.append(script_data)
 
             if script['request']:
-                self.scripts_active.append(scriptdata)
+                self.scripts_active.append(script_data)
 
     def run_fs(self, base_url):
         links = []
@@ -131,13 +148,13 @@ class ScriptParser:
     scripts = []
     logger = None
 
-    def __init__(self, newdir=None):
+    def __init__(self, newdir=None, logger=logging.INFO):
         self.root_dir = os.path.dirname(os.path.realpath(__file__))
         self.script_dir = os.path.join(self.root_dir, self.directory) if not newdir else newdir
         self.logger = logging.getLogger("ScriptParser")
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logger)
         ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logger)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         if not self.logger.handlers:

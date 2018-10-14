@@ -6,6 +6,7 @@ from Utils import params_from_str
 import time
 import json
 import random
+import re
 import string
 import hashlib
 import os
@@ -42,9 +43,16 @@ class Crawler:
     logger = None
     headers = {}
     data_dir = "data"
+    page_re = [
+        re.compile('window\.location\s*=\s*[\'"](.+?)[\'"]'),
+        re.compile('document\.location\s*=\s*[\'"](.+?)[\'"]'),
+        re.compile('document\.location\.href\s*=\s*[\'"](.+?)[\'"]'),
+        re.compile('window\.location\.replace\([\'"](.+?)[\'"]'),
+        re.compile('http-equiv="refresh.+?URL=[\'"](.+?)[\'"]')
+    ]
     write_output = True
 
-    def __init__(self, base_url, agent=None):
+    def __init__(self, base_url, agent=None, logger=logging.INFO):
         self.base_url = base_url
         self.root_url = '{}://{}'.format(urlparse.urlparse(self.base_url).scheme, urlparse.urlparse(self.base_url).netloc)
         self.pool = ThreadPoolExecutor(max_workers=10)
@@ -53,9 +61,9 @@ class Crawler:
         self.to_crawl.put([self.base_url, None])
         self.output_filename = os.path.join(self.data_dir, 'crawler_%s_%d.json' % (urlparse.urlparse(self.base_url).netloc, time.time()))
         self.logger = logging.getLogger("Crawler")
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logger)
         ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logger)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         if not self.logger.handlers:
@@ -75,6 +83,39 @@ class Crawler:
             return None
         return ".{0}".format(loc[len(loc)-1])
 
+    def parse_url(self, url, rooturl):
+        url = url.split('#')[0]
+        if url in self.ignored:
+            return
+        if self.get_filetype(url) not in self.allowed_filetypes:
+            self.ignored.append(url)
+            self.logger.debug("Url %s will be ignored because file type is not allowed" % url)
+            return
+        if "?" in url:
+            params = params_from_str(url.split('?')[1])
+            checksum = FormDataToolkit.get_checksum(params)
+            if [url, checksum] in self.url_variations:
+                var_num = 0
+                for part in self.url_variations:
+                    if part == [url, checksum]:
+                        var_num += 1
+                if var_num >= self.max_url_unique_keys:
+                    self.ignored.append(url)
+                    self.logger.debug("Url %s will be ignored because key variation limit is exceeded" % url)
+                    return
+                self.url_variations.append([url, checksum])
+
+        # if local link or link on same site root
+        if url.startswith('/') or url.startswith(self.root_url):
+            url = urlparse.urljoin(rooturl, url)
+            if [url, None] not in self.scraped_pages:
+                self.to_crawl.put([url, None])
+        # javascript, raw data, mailto etc..
+        if ':' not in url:
+            url = urlparse.urljoin(rooturl, url)
+            if [url, None] not in self.scraped_pages:
+                self.to_crawl.put([url, None])
+
     def parse_links(self, html, rooturl):
         try:
             soup = BeautifulSoup(html, 'html.parser')
@@ -83,37 +124,12 @@ class Crawler:
                 if (self.to_crawl.qsize() + len(self.scraped_pages)) > self.max_urls:
                     continue
                 url = link['href']
-                url = url.split('#')[0]
-                if link in self.ignored:
-                    continue
-                if self.get_filetype(url) not in self.allowed_filetypes:
-                    self.ignored.append(url)
-                    self.logger.debug("Url %s will be ignored because file type is not allowed" % url)
-                    continue
-                if "?" in url:
-                    params = params_from_str(url.split('?')[1])
-                    checksum = FormDataToolkit.get_checksum(params)
-                    if [url, checksum] in self.url_variations:
-                        var_num = 0
-                        for part in self.url_variations:
-                            if part == [url, checksum]:
-                                var_num += 1
-                        if var_num >= self.max_url_unique_keys:
-                            self.ignored.append(url)
-                            self.logger.debug("Url %s will be ignored because key variation limit is exceeded" % url)
-                            continue
-                        self.url_variations.append([url, checksum])
+                self.parse_url(url, rooturl)
+            for regex in self.page_re:
+                results = regex.findall(html)
+                for res in results:
+                    self.parse_url(res, rooturl)
 
-                # if local link or link on same site root
-                if url.startswith('/') or url.startswith(self.root_url):
-                    url = urlparse.urljoin(rooturl, url)
-                    if [url, None] not in self.scraped_pages:
-                        self.to_crawl.put([url, None])
-                # javascript, raw data, mailto etc..
-                if ':' not in url:
-                    url = urlparse.urljoin(rooturl, url)
-                    if [url, None] not in self.scraped_pages:
-                        self.to_crawl.put([url, None])
         except Exception as e:
             self.logger.warning("Parse error on %s -> %s" % (rooturl, e.message))
 

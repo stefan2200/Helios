@@ -2,6 +2,7 @@
   "name": "Admin directory found",
   "run_at": "fs",
   "find": "once",
+  "options": ["discovery"],
   "data": {
     "url": "admin/",
     "options": [

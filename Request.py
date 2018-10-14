@@ -18,6 +18,8 @@ class Request:
         self.data = data
         self.headers = headers
         if agent:
+            if not self.headers:
+                self.headers = {}
             self.headers['User-Agent'] = agent
         self.cookies = cookies
         self.redirect = redir

@@ -2,6 +2,7 @@
   "name": "Local File Inclusion (Absolute Path)",
   "run_at": "request",
   "find": "many",
+  "options": ["injection"],
   "request": ["parameters", "cookies"],
   "data": {
     "inject_value": "/etc/passwd"

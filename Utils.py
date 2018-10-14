@@ -81,7 +81,6 @@ def uniquinize(urls):
                 newdata[k] = ""
         payload = [newparams, newdata]
         if payload in seen:
-            print("Ignoring %s %s because duplicate keys" % (url, data))
             continue
         seen.append(payload)
         out.append([url, data])

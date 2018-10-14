@@ -3,6 +3,7 @@
   "run_at": "request",
   "find": "many",
   "request": ["parameters", "cookies"],
+  "options": ["injection", "dangerous"],
   "data": {
     "inject_value": "<xss></xss>"
   },

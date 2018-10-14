@@ -10,7 +10,7 @@ class Module(module_base.Base):
     def __init__(self):
         self.name = "Stored XSS"
         self.injections = {}
-        self.module_types = ['injection', 'persistent', 'post']
+        self.module_types = ['injection', 'dangerous']
         self.possibilities = [
             '<script>{injection_value}()</script>'
         ]

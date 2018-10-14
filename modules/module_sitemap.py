@@ -11,7 +11,7 @@ class Module(module_base.Base):
     def __init__(self):
         self.name = "sitemap.xml"
         self.injections = {}
-        self.module_types = ['pre']
+        self.module_types = ['discovery']
         self.input = "base"
         self.output = "crawler"
 

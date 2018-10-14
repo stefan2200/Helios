@@ -11,7 +11,7 @@ class Module(module_base.Base):
         self.name = "Backup Files"
         self.input = "urls"
         self.injections = {}
-        self.module_types = ['post']
+        self.module_types = ['discovery']
         self.possibilities = [
             '{url}{extension}~',
             '{url}{extension}.bak',

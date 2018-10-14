@@ -2,6 +2,7 @@
   "name":"SQL Injection",
   "run_at":"request",
   "find":"many",
+  "options": ["injection"],
   "request":[
     "parameters",
     "cookies"

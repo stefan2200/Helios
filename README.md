@@ -45,8 +45,10 @@ pip install -r requirements.txt
 # How to use (Command Line)
 ```
 usage: helios.py: args [-h] -u URL [--user-agent USER_AGENT] [-c] [-d]
-                         [--max-urls MAXURLS] [-a] [-s] [--adv] [-o OUTFILE]
-                         [--scripts SCRIPTS] [--options OPTIONS] [-v]
+                         [--driver-path DRIVER_PATH] [--show-driver]
+                         [--max-urls MAXURLS] [-a] [--no-proxy]
+                         [--proxy-port PROXY_PORT] [-s] [--adv] [-o OUTFILE]
+                         [--scripts] [--options OPTIONS] [-v]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -55,15 +57,36 @@ optional arguments:
                         Set the user agent
   -c, --crawl           Enable the crawler
   -d, --driver          Run WebDriver for advanced discovery
+  --driver-path DRIVER_PATH
+                        Set custom path for the WebDriver
+  --show-driver         Show the WebDriver window
   --max-urls MAXURLS    Set max urls for the crawler
   -a, --all             Run everything
+  --no-proxy            Disable the proxy module for the WebDriver
+  --proxy-port PROXY_PORT
+                        Set a custom port for the proxy module, default: 3333
   -s, --scan            Enable the scanner
   --adv                 Enable the advanced scripts
   -o OUTFILE, --output OUTFILE
                         Output file to write to (JSON)
-  --scripts SCRIPTS     Enable the script engine
-  --options OPTIONS     Comma separated list of scan options
+  --scripts             Enable the script engine
+  --options OPTIONS     Comma separated list of scan options (discovery,
+                        passive, injection, dangerous, all)
   -v, --verbose         Verbose mode
+
+
+
+Crawl and scan an entire domain
+helios.py -u "http://example.com/" -c -s --scripts
+
+Safe scan
+helios.py -u "http://example.com/" -c -s --options "passive,discovery" --adv
+
+Full scan
+helios.py -u "http://example.com/" -a --driver --options all --max-urls 1000
+
+Scan a single URL
+helios.py -u "http://example.com/vuln.php?id=1" -s --scripts
 ```
 
 ![Example 2](images/Example2.PNG?raw=true "Example 2")

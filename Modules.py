@@ -8,19 +8,45 @@ class CustomModuleLoader:
     blacklist = ['module_base.py', '__init__.py']
     modules = []
     logger = None
+    options = None
 
-    def __init__(self, folder='modules', blacklist=[]):
+    def __init__(self, folder='modules', blacklist=[], options=None, logger=logging.INFO):
         self.blacklist.extend(blacklist)
+        self.options = options
         self.folder = folder
         self.logger = logging.getLogger("CustomModuleLoader")
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logger)
         ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logger)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         self.logger.addHandler(ch)
         self.logger.debug("Loading custom modules")
         self.load_modules()
+
+    def load(self, f):
+        base = f.replace('.py', '')
+        try:
+            command_module = __import__("modules.%s" % base, fromlist=["modules"])
+            module = command_module.Module()
+            if self.options:
+                if 'all' not in self.options:
+                    for opt in module.module_types:
+                        if opt not in self.options:
+                            self.logger.debug("Disabling module %s because %s is not enabled" % (module.name, opt))
+                            return
+            else:
+                if 'dangerous' in module.module_types:
+                    self.logger.debug(
+                        "Disabling script %s because dangerous flag is present, use --options all or add the dangerous flag to override" % (
+                            module.name))
+                    return
+            self.modules.append(module)
+            self.logger.info("Enabled module: %s" % f)
+        except ImportError as e:
+            self.logger.warning("Error importing module:%s %s" % (f, e.message))
+        except Exception as e:
+            self.logger.warning("Error loading module:%s %s" % (f, e.message))
 
     def load_modules(self):
         for f in os.listdir(self.folder):
@@ -28,16 +54,7 @@ class CustomModuleLoader:
                 continue
             if f in self.blacklist:
                 continue
-            base = f.replace('.py', '')
-            try:
-                command_module = __import__("modules.%s" % base, fromlist=["modules"])
-                module = command_module.Module()
-                self.modules.append(module)
-                self.logger.info("Enabled module: %s" % f)
-            except ImportError,e:
-                self.logger.warning("Error importing module:%s %s" % (f, e.message))
-            except Exception, e:
-                self.logger.warning("Error loading module:%s %s" % (f, e.message))
+            self.load(f)
 
     def run_post(self, urltree, headers={}, cookies={}):
         output = []
@@ -52,7 +69,7 @@ class CustomModuleLoader:
                             if results and len(results):
                                 for r in results:
                                     output.extend([module.name, r])
-                        except Exception, e:
+                        except Exception as e:
                             self.logger.warning("Error executing module %s on %s %s: %s" % (module.name, url, data, e.message))
                 if module.input == "urls":
                     self.logger.debug("Running module %s on %d urls" % (module.name, len(urltree)))
@@ -61,7 +78,7 @@ class CustomModuleLoader:
                         if results and len(results):
                             for r in results:
                                 output.extend([module.name, r])
-                    except Exception, e:
+                    except Exception as e:
                         self.logger.warning("Error executing module %s on urls: %s" % (module.name, e.message))
 
         return output

@@ -2,6 +2,7 @@
   "name":"Admin Login Page",
   "run_at":"fs",
   "find":"once",
+  "options": ["discovery"],
   "request":null,
   "data":{
     "url":"administrator\/"

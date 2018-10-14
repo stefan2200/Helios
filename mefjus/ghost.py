@@ -14,15 +14,18 @@ class GhostDriverInterface:
     driver_path = "drivers\\chromedriver.exe"
     driver = None
     logger = None
-    page_sleep = 1.5
+    page_sleep = 2
+    proxy_host = "127.0.0.1"
+    proxy_port = 3333
 
-    def __init__(self, custom_path=None):
+    def __init__(self, custom_path=None, logger=None, show_browser=False, use_proxy=True, proxy_port=3333):
         if custom_path:
             self.driver_path = custom_path
+        self.proxy_port = proxy_port
         self.logger = logging.getLogger("WebDriver")
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logger)
         ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logger)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         self.logger.addHandler(ch)
@@ -30,19 +33,22 @@ class GhostDriverInterface:
         if not os.path.exists(self.driver_path):
             self.logger.warning("Error loading driver from path: %s the driver module will be disabled\nGet the latest one from http://chromedriver.chromium.org/downloads" % self.driver_path)
             return
-        self.start()
+        self.start(use_proxy=use_proxy, show_browser=show_browser)
 
-    def start(self, use_proxy=True, proxy_host="127.0.0.1", proxy_port=3333):
-        options = ChromeOptions()
+    def start(self, use_proxy=True, show_browser=False):
+        try:
+            options = ChromeOptions()
+            options.add_argument("ignore-certificate-errors")
+            options.add_argument("--ignore-ssl-errors")
+            if not show_browser:
+                options.add_argument("--headless")
+            if use_proxy:
+                self.logger.info("Enabled proxy %s:%d" % (self.proxy_host, self.proxy_port))
+                options.add_argument("--proxy-server=http://" + "%s:%d" % (self.proxy_host, self.proxy_port))
 
-        options.add_argument("ignore-certificate-errors")
-        options.add_argument("--ignore-ssl-errors")
-        options.add_argument("--headless")
-        if use_proxy:
-            self.logger.info("Enabled proxy %s:%d" % (proxy_host, proxy_port))
-            options.add_argument("--proxy-server=http://" + "%s:%d" % (proxy_host, proxy_port))
-
-        self.driver = Chrome(executable_path=self.driver_path, chrome_options=options)
+            self.driver = Chrome(executable_path=self.driver_path, chrome_options=options)
+        except Exception as e:
+            self.logger.error("Error creating WebDriver object: %s" % e.message)
 
     def get(self, url):
         if not self.driver:
@@ -149,6 +155,7 @@ class DebugInterceptor(RequestInterceptorPlugin, ResponseInterceptorPlugin):
     def do_response(self, data):
         return data
 
+
 class CustomProxy:
     proxyThread = None
     proxy_host = '127.0.0.1'
@@ -159,12 +166,13 @@ class CustomProxy:
     ca_dir = ""
     proxy_log = "output.txt"
 
-    def __init__(self, custom_path=None, cert=None):
-        self.logger.setLevel(logging.DEBUG)
+    def __init__(self, custom_path=None, cert=None, logger=logging.INFO, proxy_port=3333):
+        self.logger.setLevel(logger)
         ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logger)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
+        self.proxy_port = proxy_port
 
         if not self.logger.handlers:
             self.logger.addHandler(ch)
@@ -192,35 +200,42 @@ class CustomProxy:
         try:
             self.proxy.serve_forever()
         except:
-            print("The proxy has stopped")
+            return
 
 
 class mefjus:
     seen = []
     ca_dir = "certs"
     ca_file = "mefjus.pem"
+    proxy = None
+    driver = None
+    show_browser = None
 
-    def __init__(self):
-        self.p = CustomProxy()
-        self.x = GhostDriverInterface()
+    def __init__(self, logger=logging.INFO, driver_path=None, proxy_port=3333, use_proxy=True):
+        if use_proxy:
+            self.proxy = CustomProxy(logger=logger, proxy_port=proxy_port)
+        self.driver = GhostDriverInterface(logger=logger, custom_path=driver_path, proxy_port=proxy_port, use_proxy=use_proxy, show_browser=self.show_browser)
 
     def close(self):
-        self.x.close()
-        time.sleep(1)
-        self.p.proxy.server_close()
+        if self.driver:
+            self.driver.close()
+            time.sleep(1)
+        if self.proxy:
+            self.proxy.proxy.server_close()
 
     def run(self, urls):
-        self.p.ca_dir = self.ca_dir
-        if not os.path.exists(self.p.ca_dir):
-            os.mkdir(self.p.ca_dir)
-        self.p.ca_file = self.ca_file
-        self.p.start()
+        if self.proxy:
+            self.proxy.ca_dir = self.ca_dir
+            if not os.path.exists(self.proxy.ca_dir):
+                os.mkdir(self.proxy.ca_dir)
+            self.proxy.ca_file = self.ca_file
+            self.proxy.start()
         for url in urls:
             if type(url) is list:
                 url = url[0]
             if url not in self.seen:
                 self.seen.append(url)
-                self.x.get(url)
+                self.driver.get(url)
         self.close()
         return self.read_output()
 

@@ -2,6 +2,7 @@
   "name": "Cross-Site Scripting (XSS)",
   "run_at": "request",
   "find": "many",
+  "options": ["injection", "dangerous"],
   "request": ["parameters", "cookies"],
   "data": {
     "inject_value": "\" onmouseover=\"xss()\" bad=\""
