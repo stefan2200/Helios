@@ -59,7 +59,7 @@ class CustomModuleLoader:
     def run_post(self, urltree, headers={}, cookies={}):
         output = []
         for module in self.modules:
-            if 'post' in module.module_types:
+            if 1:
                 if module.input == "urldata":
                     for row in urltree:
                         try:
@@ -68,6 +68,7 @@ class CustomModuleLoader:
                             results = module.run(url, data, headers, cookies)
                             if results and len(results):
                                 for r in results:
+                                    self.logger.info("Module %s Discovered %s" % (module.name, r))
                                     output.extend([module.name, r])
                         except Exception as e:
                             self.logger.warning("Error executing module %s on %s %s: %s" % (module.name, url, data, e.message))
@@ -77,6 +78,7 @@ class CustomModuleLoader:
                         results = module.run(urltree, headers, cookies)
                         if results and len(results):
                             for r in results:
+                                self.logger.info("Module %s Discovered %s" % (module.name, r))
                                 output.extend([module.name, r])
                     except Exception as e:
                         self.logger.warning("Error executing module %s on urls: %s" % (module.name, e.message))

@@ -35,7 +35,7 @@ class Crawler:
 
     max_postdata_per_url = 10
     max_postdata_unique_keys = 5
-    allowed_filetypes = [None, '.php', '.aspx', '.asp', '.html', '.jsp', '.xhtml', '.htm']
+    blocked_filetypes = ['.jpg', '.png', '.gif', '.wav', '.mp3', '.mp4', '.3gp', '.js', '.css', 'jpeg']
     output_filename = "tmp.json"
     thread_count = 5
     cookie = CookieLib()
@@ -55,7 +55,7 @@ class Crawler:
     def __init__(self, base_url, agent=None, logger=logging.INFO):
         self.base_url = base_url
         self.root_url = '{}://{}'.format(urlparse.urlparse(self.base_url).scheme, urlparse.urlparse(self.base_url).netloc)
-        self.pool = ThreadPoolExecutor(max_workers=10)
+        self.pool = ThreadPoolExecutor(max_workers=self.thread_count)
         self.scraped_pages = []
         self.to_crawl = Queue()
         self.to_crawl.put([self.base_url, None])
@@ -87,7 +87,7 @@ class Crawler:
         url = url.split('#')[0]
         if url in self.ignored:
             return
-        if self.get_filetype(url) not in self.allowed_filetypes:
+        if self.get_filetype(url) in self.blocked_filetypes:
             self.ignored.append(url)
             self.logger.debug("Url %s will be ignored because file type is not allowed" % url)
             return
@@ -235,9 +235,40 @@ class Extractor:
         for form in self.get_forms():
             action = self.get_action(form)
             inputs = self.get_inputs(form)
+            special = self.get_special(form, fill_empty)
             data = self.get_form_parameters(inputs, fill_empty)
+            for item in special:
+                data[item] = special[item]
             rtn.append([urlparse.urljoin(self.url, action), data])
         return rtn
+
+    def get_special(self, form, fill_empty=False):
+        results = {}
+        inputs = form.find_all('textarea', {'name': True})
+        for i in inputs:
+            name = i['name']
+            if i.text and len(i.text.strip()):
+                results[name] = i.text
+            else:
+                if fill_empty:
+                    value = self.generate_random(None, None)
+                    results[name] = value
+                else:
+                    results[name] = ""
+
+        inputs = form.find_all('select', {'name': True})
+        for i in inputs:
+            name = i['name']
+            options = i.find_all('option', {'value': True})
+            if len(options):
+                results[name] = options[0]['value']
+            else:
+                if fill_empty:
+                    value = self.generate_random(None, None)
+                    results[name] = value
+                else:
+                    results[name] = ""
+        return results
 
     def get_form_parameters(self, inputs, fill_empty):
         res = {}
@@ -255,7 +286,7 @@ class Extractor:
                     value = ""
                 if name not in res:
                     res[name] = value
-            except:
+            except Exception as e:
                 pass
         return res
 
@@ -272,7 +303,6 @@ class Extractor:
 
     def get_inputs(self, form):
         inputs = form.find_all('input', {'name': True})
-        inputs.extend(form.find_all('textarea', {'name': True}))
         return inputs
 
     def get_action(self, form):

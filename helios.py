@@ -10,6 +10,7 @@ import time
 import logging
 import sys
 import argparse
+import Scanner
 try:
     import urlparse
 except ImportError:
@@ -28,6 +29,8 @@ class Helios:
     output_file = None
     log_level = logging.INFO
     driver_path = None
+    _max_safe_threads = 10
+    thread_count = 10
 
     proxy_port = 3333
     driver_show = False
@@ -47,6 +50,9 @@ class Helios:
         if not self.logger.handlers:
             self.logger.addHandler(ch)
         self.logger.info("Starting Helios")
+        if self.thread_count > self._max_safe_threads:
+            self.logger.warning("Number of threads %d is too high, defaulting to %d" % (self.thread_count, self._max_safe_threads))
+            self.thread_count = self._max_safe_threads
 
     def run(self, start_url):
         self.start()
@@ -66,6 +72,7 @@ class Helios:
         todo = []
         if self.use_crawler:
             c = Crawler(base_url=start_url, logger=self.log_level)
+            c.thread_count = self.thread_count
             c.max_urls = self.crawler_max_urls
             # discovery scripts, pre-run scripts and advanced modules
             if self.use_scripts:
@@ -113,16 +120,19 @@ class Helios:
                 self.logger.debug("WebDriver discovered %d more url/post data pairs" % (len(todo) - old_num))
         else:
             todo = [start_url, None]
+        scanner = None
         if self.use_scanner:
             self.logger.info("Starting scan sequence")
+            scanner = Scanner.Scanner(logger=self.log_level, script_engine=s, thread_count=self.thread_count)
             for page in todo:
                 url, data = page
-                self.logger.debug("[Scripts] Testing %s %s" % (url, data))
                 req = Request(url, data=data, agent=self.user_agent)
                 req.run()
-                s.run_scripts(req)
+                scanner.queue.put(req)
+                scanner.logger.debug("Queued %s %s" % (url, data))
+            scanner.run()
             if self.use_adv_scripts:
-                self.logger.info("Running post scripts")
+                loader.logger.info("Running post scripts")
                 post_results = loader.run_post(todo)
 
         scan_tree = {
@@ -132,7 +142,7 @@ class Helios:
             'starturl': start_url,
             'crawled': len(c.scraped_pages),
             'scanned': len(todo) if self.use_scanner else 0,
-            'results': s.results if self.use_scanner else [],
+            'results': scanner.script_engine.results if scanner else [],
             'post': post_results if self.use_adv_scripts else []
         }
 
@@ -160,6 +170,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--no-proxy', help='Disable the proxy module for the WebDriver', dest='no_proxy', action='store_true')
     parser.add_argument('--proxy-port', help='Set a custom port for the proxy module, default: 3333', dest='proxy_port',
+                        default=None)
+    parser.add_argument('--threads', help='Set a custom number of crawling / scanning threads', dest='threads',
                         default=None)
 
     parser.add_argument('-s', '--scan', help='Enable the scanner', dest='scanner',
@@ -193,6 +205,9 @@ if __name__ == "__main__":
     helios.output_file = opts.outfile
     if opts.verbose:
         helios.log_level = logging.DEBUG
+    if opts.threads:
+        helios.thread_count = int(opts.threads)
+
     if opts.maxurls:
         helios.crawler_max_urls = int(opts.maxurls)
     helios.run(url)

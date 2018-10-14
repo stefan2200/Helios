@@ -18,7 +18,7 @@ class Module(module_base.Base):
     def run(self, base, headers={}, cookies={}):
         self.headers = headers
         self.cookies = cookies
-        url = urlparse.urljoin(base, '/robots.txt')
+        url = urlparse.urljoin(base, '/sitemap.xml')
         result = self.send(url, None, None)
         output = []
         if result:

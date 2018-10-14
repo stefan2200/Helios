@@ -59,7 +59,7 @@ class Module(module_base.Base):
                 result = requests.post(url, params=params, data=data, headers=headers, cookies=cookies)
             else:
                 result = requests.get(url, params=params, headers=headers, cookies=cookies)
-        except requests.Timeout, e:
+        except requests.Timeout:
             if self.has_read_timeout:
                 if self.timeout_state > self.max_timeout_state:
                     r = raw_input('The site appears to be dead, press enter to try again, q to quit') if not self.auto else "q"
@@ -78,7 +78,7 @@ class Module(module_base.Base):
                 sleeptime = self.timeout_state * 10
                 time.sleep(sleeptime)
                 return self.send(url, params, data, headers, cookies)
-        except Exception, e:
+        except Exception:
             return False
         end = time.time()
         eslaped = end - start

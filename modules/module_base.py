@@ -31,7 +31,7 @@ class Base:
         for sub in params.split('&'):
             parts = sub.split('=')
             if len(sub) > 1:
-                out[parts[0]] = out[parts[1]]
+                out[parts[0]] = parts[1]
             else:
                 out[parts[0]] = ""
         return base, out

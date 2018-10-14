@@ -20,8 +20,7 @@ class Module(module_base.Base):
             '{url}.inc',
             '{url}.old',
             '{url}.zip',
-            '{url}.txt',
-            '{url}',
+            '{url}.txt'
         ]
         self.output = "vulns"
 
@@ -54,6 +53,6 @@ class Module(module_base.Base):
                 result = requests.post(url, params=params, data=data, headers=headers, cookies=cookies)
             else:
                 result = requests.get(url, params=params, headers=headers, cookies=cookies)
-        except Exception, e:
-            print(e.message)
+        except Exception as e:
+           pass
         return result
