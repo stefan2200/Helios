@@ -49,6 +49,6 @@ class Scanner:
             except Empty:
                 break
             except Exception as e:
-                self.logger.warning("Error: %s" % e.message)
+                self.logger.warning("Error: %s" % str(e))
                 continue
             self.logger.info("Todo: {0} Done: {1}".format(self.queue.qsize(), self.done))

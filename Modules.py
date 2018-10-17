@@ -44,9 +44,9 @@ class CustomModuleLoader:
             self.modules.append(module)
             self.logger.info("Enabled module: %s" % f)
         except ImportError as e:
-            self.logger.warning("Error importing module:%s %s" % (f, e.message))
+            self.logger.warning("Error importing module:%s %s" % (f, str(e)))
         except Exception as e:
-            self.logger.warning("Error loading module:%s %s" % (f, e.message))
+            self.logger.warning("Error loading module:%s %s" % (f, str(e)))
 
     def load_modules(self):
         for f in os.listdir(self.folder):
@@ -71,7 +71,7 @@ class CustomModuleLoader:
                                     self.logger.info("Module %s Discovered %s" % (module.name, r))
                                     output.extend([module.name, r])
                         except Exception as e:
-                            self.logger.warning("Error executing module %s on %s %s: %s" % (module.name, url, data, e.message))
+                            self.logger.warning("Error executing module %s on %s %s: %s" % (module.name, url, data, str(e)))
                 if module.input == "urls":
                     self.logger.debug("Running module %s on %d urls" % (module.name, len(urltree)))
                     try:
@@ -81,7 +81,7 @@ class CustomModuleLoader:
                                 self.logger.info("Module %s Discovered %s" % (module.name, r))
                                 output.extend([module.name, r])
                     except Exception as e:
-                        self.logger.warning("Error executing module %s on urls: %s" % (module.name, e.message))
+                        self.logger.warning("Error executing module %s on urls: %s" % (module.name, str(e)))
 
         return output
 

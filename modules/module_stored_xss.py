@@ -78,5 +78,5 @@ class Module(module_base.Base):
             else:
                 result = requests.get(url, params=params, headers=headers, cookies=cookies)
         except Exception as e:
-            print(e.message)
+            print(str(e))
         return result

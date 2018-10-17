@@ -44,11 +44,7 @@ pip install -r requirements.txt
 
 # How to use (Command Line)
 ```
-usage: helios.py: args [-h] -u URL [--user-agent USER_AGENT] [-c] [-d]
-                         [--driver-path DRIVER_PATH] [--show-driver]
-                         [--max-urls MAXURLS] [-a] [--no-proxy]
-                         [--proxy-port PROXY_PORT] [-s] [--adv] [-o OUTFILE]
-                         [--scripts] [--options OPTIONS] [-v]
+helios.py: -u URL args
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -65,14 +61,27 @@ optional arguments:
   --no-proxy            Disable the proxy module for the WebDriver
   --proxy-port PROXY_PORT
                         Set a custom port for the proxy module, default: 3333
+  --threads THREADS     Set a custom number of crawling / scanning threads
   -s, --scan            Enable the scanner
   --adv                 Enable the advanced scripts
   -o OUTFILE, --output OUTFILE
                         Output file to write to (JSON)
   --scripts             Enable the script engine
-  --options OPTIONS     Comma separated list of scan options (discovery,
+  --options CUSTOM_OPTIONS
+                        Comma separated list of scan options (discovery,
                         passive, injection, dangerous, all)
+  --msf                 Enable the msfrpcd exploit module
+  --msf-host MSF_HOST   Set the msfrpcd host
+  --msf-port MSF_PORT   Set the msfrpcd port
+  --msf-creds MSF_CREDS
+                        Set the msfrpcd username:password
+  --msf-endpoint MSF_URI
+                        Set a custom endpoint URI
+  --msf-nossl MSF_NOSSL
+                        Disable SSL
+  --msf-start           Start msfrpcd if not running already
   -v, --verbose         Verbose mode
+
 
 
 
@@ -87,6 +96,9 @@ helios.py -u "http://example.com/" -a --driver --options all --max-urls 1000
 
 Scan a single URL
 helios.py -u "http://example.com/vuln.php?id=1" -s --scripts
+
+Pwn a web server
+helios.py -u "http://example.com/" --msf
 ```
 
 ![Example 2](images/Example2.PNG?raw=true "Example 2")

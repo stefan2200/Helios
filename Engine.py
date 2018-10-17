@@ -79,7 +79,7 @@ class MatchObject:
                 re.compile(self.match)
             except Exception as e:
                 print("Compilation of regex %s has failed, disabling script" % self.match)
-                print("Error: %s" % e.message)
+                print("Error: %s" % str(e))
                 self.is_ok = False
 
     def run(self, response_object):

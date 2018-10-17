@@ -11,6 +11,7 @@ import logging
 import sys
 import argparse
 import Scanner
+from metamonster import metamonster
 try:
     import urlparse
 except ImportError:
@@ -40,6 +41,15 @@ class Helios:
     user_agent = None
     scanoptions = None
 
+    msf = False
+    msf_host = "localhost"
+    msf_port = 55553
+    msf_username = "msf"
+    msf_password = "msfrpcd"
+    msf_ssl = True
+    msf_path = "/api/"
+    msf_autostart = False
+
     def start(self):
         self.logger = logging.getLogger("Helios")
         self.logger.setLevel(self.log_level)
@@ -58,6 +68,7 @@ class Helios:
         self.start()
         start_time = time.time()
         scope = Scope(start_url)
+        c = None
         self.logger.debug("Parsing scan options")
         if self.scanoptions:
             vars = self.scanoptions.split(',')
@@ -134,15 +145,35 @@ class Helios:
             if self.use_adv_scripts:
                 loader.logger.info("Running post scripts")
                 post_results = loader.run_post(todo)
+        meta = {}
+        if self.msf:
+            monster = metamonster.MetaMonster(log_level=self.log_level)
+            monster.username = self.msf_username
+            monster.password = self.msf_password
+            monster.host = self.msf_host
+            monster.port = self.msf_port
+            monster.ssl = self.msf_ssl
+            monster.endpoint = self.msf_path
+            monster.should_start = self.msf_autostart
+
+            monster.connect(start_url)
+            if monster.client and monster.client.is_working:
+                monster.get_exploits()
+                monster.detect()
+                queries = monster.create_queries()
+                monster.run_queries(queries)
+                meta = monster.results
+
 
         scan_tree = {
             'start': start_time,
             'end': time.time(),
             'scope': scope.host,
             'starturl': start_url,
-            'crawled': len(c.scraped_pages),
+            'crawled': len(c.scraped_pages) if c else 0,
             'scanned': len(todo) if self.use_scanner else 0,
             'results': scanner.script_engine.results if scanner else [],
+            'metasploit': meta,
             'post': post_results if self.use_adv_scripts else []
         }
 
@@ -182,6 +213,15 @@ if __name__ == "__main__":
     parser.add_argument('--scripts', help='Enable the script engine', dest='scripts', default=False, action='store_true')
     parser.add_argument('--options', help='Comma separated list of scan options (discovery, passive, injection, dangerous, all)', dest='custom_options',
                         default=None)
+    parser.add_argument('--msf', help='Enable the msfrpcd exploit module', dest='msf', default=False,
+                        action='store_true')
+    parser.add_argument('--msf-host', help='Set the msfrpcd host', dest='msf_host', default=None)
+    parser.add_argument('--msf-port', help='Set the msfrpcd port', dest='msf_port', default=None)
+    parser.add_argument('--msf-creds', help='Set the msfrpcd username:password', dest='msf_creds', default=None)
+    parser.add_argument('--msf-endpoint', help='Set a custom endpoint URI', dest='msf_uri', default=None)
+    parser.add_argument('--msf-nossl', help='Disable SSL', dest='msf_nossl', default=False)
+    parser.add_argument('--msf-start', help='Start msfrpcd if not running already', dest='msf_autostart', default=False,
+                        action='store_true')
     parser.add_argument('-v', '--verbose', help='Verbose mode', dest='verbose', default=False, action='store_true')
 
     opts = parser.parse_args(sys.argv[1:])
@@ -207,7 +247,20 @@ if __name__ == "__main__":
         helios.log_level = logging.DEBUG
     if opts.threads:
         helios.thread_count = int(opts.threads)
-
     if opts.maxurls:
         helios.crawler_max_urls = int(opts.maxurls)
+    if opts.msf:
+        helios.msf = True
+        if opts.msf_creds:
+            helios.msf_username, helios.msf_password = opts.msf_creds.split(':')
+        if opts.msf_port:
+            helios.msf_port = int(opts.msf_port)
+        if opts.msf_host:
+            helios.msf_host = opts.msf_host
+        if opts.msf_nossl:
+            helios.msf_ssl = False
+        if opts.msf_autostart:
+            helios.msf_ssl = False
+        if opts.msf_uri:
+            helios.msf_path = opts.msf_uri
     helios.run(url)

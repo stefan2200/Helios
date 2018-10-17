@@ -48,7 +48,7 @@ class GhostDriverInterface:
 
             self.driver = Chrome(executable_path=self.driver_path, chrome_options=options)
         except Exception as e:
-            self.logger.error("Error creating WebDriver object: %s" % e.message)
+            self.logger.error("Error creating WebDriver object: %s" % str(e))
 
     def get(self, url):
         if not self.driver:
@@ -63,7 +63,7 @@ class GhostDriverInterface:
             self.driver.get(url)
         except Exception as e:
             raise
-            self.logger.error("Page %s threw an error: %s" % (url, e.message))
+            self.logger.error("Page %s threw an error: %s" % (url, str(e)))
 
         time.sleep(self.page_sleep)
         self.logger.debug("OK %s" % url)

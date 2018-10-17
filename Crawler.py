@@ -131,7 +131,7 @@ class Crawler:
                     self.parse_url(res, rooturl)
 
         except Exception as e:
-            self.logger.warning("Parse error on %s -> %s" % (rooturl, e.message))
+            self.logger.warning("Parse error on %s -> %s" % (rooturl, str(e)))
 
     def get_col(self, arr, col):
         return map(lambda x: x[col], arr)
@@ -155,7 +155,7 @@ class Crawler:
             try:
                 self.cookie.autoparse(result.headers)
             except Exception as e:
-                print(e.message)
+                print(str(e))
 
     def scrape_page(self, url):
         url, data = url
@@ -165,7 +165,7 @@ class Crawler:
         except requests.RequestException:
             return
         except Exception as e:
-            self.logger.warning("Error in thread: %s" % e.message)
+            self.logger.warning("Error in thread: %s" % str(e))
 
     def has_page(self, url, data):
         for u, d in self.scraped_pages:
@@ -187,7 +187,7 @@ class Crawler:
             except Empty:
                 break
             except Exception as e:
-                self.logger.warning("Error: %s" % e.message)
+                self.logger.warning("Error: %s" % str(e))
                 continue
             self.logger.info("Todo: {0} Done: {1}".format(self.to_crawl.qsize(), len(self.scraped_pages)))
         if self.write_output:
