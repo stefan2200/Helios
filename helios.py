@@ -11,6 +11,7 @@ import logging
 import sys
 import argparse
 import Scanner
+import libcms.cms_scanner_core
 from metamonster import metamonster
 try:
     import urlparse
@@ -50,6 +51,8 @@ class Helios:
     msf_path = "/api/"
     msf_autostart = False
 
+    run_cms = True
+
     def start(self):
         self.logger = logging.getLogger("Helios")
         self.logger.setLevel(self.log_level)
@@ -77,8 +80,8 @@ class Helios:
                 opt = v.strip()
                 self.scanoptions.append(opt)
                 self.logger.debug("Enabled option %s" % opt)
-
-        loader = Modules.CustomModuleLoader(options=helios.scanoptions, logger=self.log_level)
+        if self.use_scripts:
+            loader = Modules.CustomModuleLoader(options=helios.scanoptions, logger=self.log_level)
 
         todo = []
         if self.use_crawler:
@@ -145,6 +148,11 @@ class Helios:
             if self.use_adv_scripts:
                 loader.logger.info("Running post scripts")
                 post_results = loader.run_post(todo)
+        cms_results = None
+        if self.run_cms:
+            cms_loader = libcms.cms_scanner_core.CustomModuleLoader(log_level=self.log_level)
+            cms_results = cms_loader.run_scripts(start_url)
+
         meta = {}
         if self.msf:
             monster = metamonster.MetaMonster(log_level=self.log_level)
@@ -164,7 +172,6 @@ class Helios:
                 monster.run_queries(queries)
                 meta = monster.results
 
-
         scan_tree = {
             'start': start_time,
             'end': time.time(),
@@ -174,6 +181,7 @@ class Helios:
             'scanned': len(todo) if self.use_scanner else 0,
             'results': scanner.script_engine.results if scanner else [],
             'metasploit': meta,
+            'cms': cms_results,
             'post': post_results if self.use_adv_scripts else []
         }
 
@@ -194,6 +202,7 @@ if __name__ == "__main__":
     parser.add_argument('--user-agent', help='Set the user agent', dest='user_agent', default=None)
     parser.add_argument('-c', '--crawl', help='Enable the crawler', dest='crawler', action='store_true')
     parser.add_argument('-d', '--driver', help='Run WebDriver for advanced discovery', dest='driver', action='store_true')
+    parser.add_argument('--cms', help='Enable the CMS module', dest='cms_enabled', action='store_true', default=False)
     parser.add_argument('--driver-path', help='Set custom path for the WebDriver', dest='driver_path', default=None)
     parser.add_argument('--show-driver', help='Show the WebDriver window', dest='show_driver', default=None, action='store_true')
     parser.add_argument('--max-urls', help='Set max urls for the crawler', dest='maxurls', default=None)
@@ -234,6 +243,7 @@ if __name__ == "__main__":
         helios.use_scripts = opts.scripts
         helios.use_adv_scripts = opts.modules
         helios.use_crawler = opts.crawler
+        helios.run_cms = opts.cms_enabled
     helios.scanoptions = opts.custom_options
     helios.use_web_driver = opts.driver
     helios.driver_path = opts.driver_path

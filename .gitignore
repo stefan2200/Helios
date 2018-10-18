@@ -111,3 +111,5 @@ output.json
 data/**
 certs/**
 output.txt
+
+libcms/scanners/cache/**
