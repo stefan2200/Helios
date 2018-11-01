@@ -4,3 +4,4 @@ requests
 selenium
 https://github.com/allfro/pymiproxy/archive/master.zip
 filelock
+msgpack

@@ -20,15 +20,21 @@ class Scanner(cms_scanner.Scanner):
         self.update_frequency = 3600 * 48
 
     def get_version(self, url):
-        text = self.get(url).text
-        version_check_1 = re.search('<meta name="generator" content="wordpress (\d+\.\d+\.\d+)', text, re.IGNORECASE)
-        if version_check_1:
-            return version_check_1.group(1)
+        text = self.get(url)
+        if text:
+            version_check_1 = re.search('<meta name="generator" content="wordpress (\d+\.\d+\.\d+)', text.text, re.IGNORECASE)
+            if version_check_1:
+                self.logger.info("Detected %s version %s on %s trough generator tag" % (self.name, version_check_1.group(1), url))
+                return version_check_1.group(1)
         check2_url = urljoin(url, 'wp-admin.php')
-        result = self.get(check2_url).text
-        version_check_2 = re.search('wp-admin\.min\.css\?ver=(\d+\.\d+\.\d+)', result, re.IGNORECASE)
-        if version_check_2:
-            return version_check_2.group(1)
+        text = self.get(check2_url)
+        text = self.get(url)
+        if text:
+            version_check_2 = re.search('wp-admin\.min\.css\?ver=(\d+\.\d+\.\d+)', text.text, re.IGNORECASE)
+            if version_check_2:
+                self.logger.info("Detected %s version %s on %s trough admin css" % (self.name, version_check_2.group(1), url))
+                return version_check_2.group(1)
+        self.logger.warning("Unable to detect %s version on url %s" % (self.name, url))
 
     def run(self, base):
         self.set_logger()
@@ -65,31 +71,9 @@ class Scanner(cms_scanner.Scanner):
                 vulns.append(vuln)
         return vulns
 
-    def match_versions(self, version, fixed_in):
-        if version == fixed_in:
-            return False
-        parts_version = version.split('.')
-        parts_fixed_in = fixed_in.split('.')
-
-        if len(parts_version) <= len(parts_fixed_in):
-            for x in range(len(parts_version)):
-                if int(parts_version[x]) < int(parts_fixed_in[x]):
-                    return True
-                if int(parts_version[x]) > int(parts_fixed_in[x]):
-                    return False
-            return False
-
-        else:
-            for x in range(len(parts_fixed_in)):
-                if int(parts_version[x]) < int(parts_fixed_in[x]):
-                    return True
-                if int(parts_version[x]) > int(parts_fixed_in[x]):
-                    return False
-            return False
-
     def get_version_info(self, version):
         data = ""
-        with open(self.cache_file(self.version_cache_file), 'r') as f:
+        with open(self.cache_file(self.version_cache_file), 'rb') as f:
             data = f.read().strip()
         json_data = json.loads(data)
         if version in json_data:
@@ -110,19 +94,23 @@ class Scanner(cms_scanner.Scanner):
         return {'users': logins}
 
     def read_plugins(self):
-        plugins = {}
-        with open(self.cache_file(self.plugin_cache_file), 'r') as f:
-            data = f.read().strip()
-        json_data = json.loads(data)
-        for x in json_data:
-            if json_data[x]['popular'] or self.aggressive:
-                plugins[x] = json_data[x]
-        return plugins
+        try:
+            plugins = {}
+            with open(self.cache_file(self.plugin_cache_file), 'rb') as f:
+                data = f.read().strip()
+            json_data = json.loads(data)
+            for x in json_data:
+                if json_data[x]['popular'] or self.aggressive:
+                    plugins[x] = json_data[x]
+            return plugins
+        except Exception as e:
+            self.logger.error("Error reading database file, cannot init plugin database: %s" % str(e))
+            return {}
 
     def get_plugin_version(self, base, plugin):
         plugin_readme_url = urljoin(base, 'wp-content/plugins/%s/readme.txt' % plugin)
         get_result = self.get(plugin_readme_url)
-        if get_result:
+        if get_result and get_result.status_code == 200:
             self.logger.debug("Plugin %s exists, getting version from readme.txt" % plugin)
             text = get_result.text
             get_version = re.search('(?s)changelog.+?(\d+\.\d+(?:\.\d+)?)', text, re.IGNORECASE)
@@ -134,15 +122,15 @@ class Scanner(cms_scanner.Scanner):
         try:
             self.logger.info("Updating plugin files")
             data1 = self.get(self.plugin_update_url)
-            with open(self.cache_file(self.plugin_cache_file), 'w') as f:
-                x = data1.text.encode('ascii', 'ignore')
+            with open(self.cache_file(self.plugin_cache_file), 'wb') as f:
+                x = data1.content
                 f.write(x)
             self.logger.info("Updating version files")
             data2 = self.get(self.version_update_url)
-            with open(self.cache_file(self.version_cache_file), 'w') as f:
-                x = data2.text.encode('ascii', 'ignore')
+            with open(self.cache_file(self.version_cache_file), 'wb') as f:
+                x = data2.content
                 f.write(x)
             self.logger.info("Update complete")
         except Exception as e:
-            self.logger.error("Error updating databases" % str(e))
+            self.logger.error("Error updating databases: %s" % str(e))
         return
