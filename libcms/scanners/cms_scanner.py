@@ -13,7 +13,7 @@ class Scanner:
     cache_dir = os.path.join(os.path.dirname(__file__), 'cache')
     logger = None
     updates = {}
-    headers = {}
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     cookies = {}
 
     def get_version(self, url):
@@ -76,6 +76,32 @@ class Scanner:
         else:
             self.logger.debug("Database is up to date, skipping..")
 
-    def get(self, url):
-        result = requests.get(url, allow_redirects=False, headers=self.headers, cookies=self.cookies)
-        return result
+    def match_versions(self, version, fixed_in):
+        if version == fixed_in:
+            return False
+        parts_version = version.split('.')
+        parts_fixed_in = fixed_in.split('.')
+
+        if len(parts_version) <= len(parts_fixed_in):
+            for x in range(len(parts_version)):
+                if int(parts_version[x]) < int(parts_fixed_in[x]):
+                    return True
+                if int(parts_version[x]) > int(parts_fixed_in[x]):
+                    return False
+            return False
+
+        else:
+            for x in range(len(parts_fixed_in)):
+                if int(parts_version[x]) < int(parts_fixed_in[x]):
+                    return True
+                if int(parts_version[x]) > int(parts_fixed_in[x]):
+                    return False
+            return False
+
+    def get(self, url, data=None):
+        if not data:
+            result = requests.get(url, allow_redirects=False, headers=self.headers, cookies=self.cookies)
+            return result
+        else:
+            result = requests.post(url, data=data, allow_redirects=False, headers=self.headers, cookies=self.cookies)
+            return result

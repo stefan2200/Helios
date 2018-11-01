@@ -8,7 +8,7 @@ import time
 import random
 class Module(module_base.Base):
     def __init__(self):
-        self.name = "Blind SQL Injection"
+        self.name = "Blind SQL Injection (Time Based)"
         self.active = True
         self.module_types = ['injection', 'dangerous']
         self.possibilities = [

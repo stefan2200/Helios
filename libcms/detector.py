@@ -25,6 +25,16 @@ class CMSDetector:
         except:
             return InvalidRequestObject()
 
+    def scan_sub(self, base, path):
+        if base.endswith('/'):
+            base = base[:-1]
+        url = "%s/%s/" % (base, path)
+        result = self.get(url)
+        # 2xx
+        if result.status_code != 404 and "not found" not in result.text.lower():
+            return self.scan(url)
+        return None
+
     def scan(self, base):
         if base.endswith('/'):
             base = base[:-1]

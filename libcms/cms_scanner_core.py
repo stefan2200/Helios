@@ -10,6 +10,8 @@ class CustomModuleLoader:
     logger = None
     is_aggressive = False
     module = None
+    # common paths for cms installations
+    cms_sub = ['wordpress', 'wp', 'magento', 'joomla', 'blog', 'magento', 'drupal']
 
     def __init__(self, folder='scanners', blacklist=[], is_aggressive=False, log_level=logging.INFO):
         self.blacklist.extend(blacklist)
@@ -58,7 +60,21 @@ class CustomModuleLoader:
                 return {cms: results}
             else:
                 self.logger.warning("No script was found for CMS %s" % cms)
+        for cms_sub in self.cms_sub:
+            cms = p.scan_sub(base, cms_sub)
+            if cms:
+                cms_url = "%s/%s/" % (base[:-1] if base.endswith('/') else base, cms_sub)
+                self.logger.info("CMS %s was detected in folder %s" % (cms, cms_url))
+                self.logger.debug("Detected %s as active CMS" % cms)
+                self.load_modules(cms)
+                if self.module:
+                    results = self.module.run(cms_url)
+                    return {cms: results}
+                else:
+                    self.logger.warning("No script was found for CMS %s" % cms)
+
+
         else:
-            self.logger.info("No cms was detected on target %s" % base)
+            self.logger.info("No CMS was detected on target %s" % base)
         return None
 
