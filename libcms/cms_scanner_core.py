@@ -78,3 +78,5 @@ class CustomModuleLoader:
             self.logger.info("No CMS was detected on target %s" % base)
         return None
 
+x = CustomModuleLoader(log_level=logging.DEBUG)
+x.run_scripts("https://www.etl.co.ls/")
