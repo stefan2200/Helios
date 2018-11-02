@@ -14,12 +14,12 @@ except ImportError:
 
 class MetaMonster:
     client = None
-    host = "192.168.0.33"
+    host = "127.0.0.1"
     port = 55553
     ssl = True
     endpoint = "/api/"
     username = "msf"
-    password = "msfrpcd"
+    password = "msf"
     modules = []
     aggressive = True
     should_start = True

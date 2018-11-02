@@ -135,6 +135,7 @@ class Helios:
         else:
             todo = [start_url, None]
         scanner = None
+        post_results = []
         if self.use_scanner:
             self.logger.info("Starting scan sequence")
             scanner = Scanner.Scanner(logger=self.log_level, script_engine=s, thread_count=self.thread_count)
