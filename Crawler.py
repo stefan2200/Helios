@@ -206,14 +206,14 @@ class FormDataToolkit:
         keys = []
         for x in data:
             keys.append(x)
-        return hashlib.md5(''.join(keys)).hexdigest()
+        return hashlib.md5(''.join(keys).encode('utf-8')).hexdigest()
 
     @staticmethod
     def get_full_checksum(data):
         keys = []
         for x in data:
             keys.append("{0}={1}".format(x, data[x]))
-        return hashlib.md5('&'.join(keys)).hexdigest()
+        return hashlib.md5('&'.join(keys).encode('utf-8')).hexdigest()
 
 # the Extractor class is used to extract forms from HTML
 # the default extract() method is equipped with the functionality to automatically fill in input fields

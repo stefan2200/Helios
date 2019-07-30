@@ -1,45 +1,44 @@
-# The Helios Project
-Web Application security made easy
 
-# The purpose
-This project combines various techniques to crawl, analyse and detect vulnerabilities in web applications. 
-Currently the scripts work best against PHP type webapps but ASP(X), JSP and pure JavaScript will soon be introduced
+# Helios
+Multi-threaded open-source web application security scanner
 
-# What can it do
-It uses 2 ways of crawling a site: first it passively crawls and extracts links / postdata from the seen pages. 
-Second it visits all pages again using a WebDriver and analyses requests with an interception proxy (the Mefjus project).
-
-After the crawling cycle there will be 2 ways of vuln detection:
-pre-defined JSON scripts and more custom modular scripts.
-
-## beware! this current version does not support Python 3 yet!
+## Supports Python 2.x and Python 3.x
 
 The current version can detect the following vulnerabilities:
-- (BLIND) SQL-Injections
-- Cross-Site-Scripting (both reflected and stored)
-- (Local/Remote) File-inclusion (various filter bypass techniques)
+- SQL-Injections
+    - Error Based
+    - Boolean Based
+    - Time Based
+- Cross-Site-Scripting
+    - Reflected
+    - Stored
+- File-inclusion
+    - Local file inclusion (readfile)
+    - Remote file inclusion (using api.myip.com)
 - Command Injection
+    - Windows + Unix + OSX
 - Backup-files
 - Generic error disclosure
-- Juicy files (readable .htaccess etc..)
+- Source code disclosure
+- Web application fingerprint
+- CMS Vulns
+    - WordPress (advanced)
+    - Drupal (basic)
+    - Joomla (basic)
+- Automatic launching of Metasploit modules (through msfrpc)
+    
 
-# Why use helios?
-- Super fast
+# Features
+- Uses multi-threading (very very fast)
 - Processes AJAX/XHR requests
-- Adaptable and easy to use
-- Allows easy modding
+- Widely adaptable
 
-# Used modules
-- pymiproxy
-- selenium
-- requests
-- filelock (to fix some of the problems that multi-threading creates)
-- futures (ThreadPoolExecutor)
 
 # How to install
 ```
-Clone this GIT
+git clone https://github.com/stefan2200/Helios.git
 pip install -r requirements.txt
+python helios.py -h
 ```
 
 # How to use (Command Line)
@@ -101,9 +100,6 @@ Pwn a web server
 helios.py -u "http://example.com/" --msf
 ```
 
-![Example 2](images/Example2.PNG?raw=true "Example 2")
-![Example 1](images/Example1.PNG?raw=true "Example 1")
-
 # How to use (Module Crawler)
 ```python
 from helios import Crawler
@@ -132,13 +128,6 @@ print(s.results)
 
 # What is next?
 - create a fully working post back crawler / scanner for ASPX/JSP type sites
-- multi-threaded scanner interface
-- extract even more url / post data (checkboxes, ng-elements etc..)
-- more scripts
 - even more scripts
-- better output format
-- improved logging
-- managed version with dashboard.. ? maybe.. ?
+- better output format (somewhat done)
 
-# Support Python 3 will be here soon
-Very very soon :)

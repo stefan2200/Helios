@@ -2,6 +2,6 @@ beautifulsoup4
 futures
 requests
 selenium
-https://github.com/allfro/pymiproxy/archive/master.zip
+pyOpenSSL
 filelock
 msgpack

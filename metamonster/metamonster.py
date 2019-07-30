@@ -1,7 +1,7 @@
 import time
-from rpcclient import Client
-from detector import PassiveDetector
-from meta_executor import MetaExecutor
+from metamonster.rpcclient import Client
+from metamonster.detector import PassiveDetector
+from metamonster.meta_executor import MetaExecutor
 import socket
 import os
 

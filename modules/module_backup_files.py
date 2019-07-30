@@ -4,8 +4,10 @@ try:
     import urlparse
 except ImportError:
     import urllib.parse as urlparse
-import module_base
-class Module(module_base.Base):
+import modules.module_base
+
+
+class Module(modules.module_base.Base):
 
     def __init__(self):
         self.name = "Backup Files"
@@ -32,8 +34,13 @@ class Module(module_base.Base):
         for u in urls:
             if u[0].split('?')[0] not in list_urls:
                 list_urls.append(u[0].split('?')[0])
+
         for f in list_urls:
+            working = 0
             for p in self.possibilities:
+                if working > 3:
+                    # if something is creating false positives
+                    continue
                 path = urlparse.urlparse(f).path
                 base, ext = os.path.splitext(path)
                 u = urlparse.urljoin(f, base)
@@ -41,6 +48,7 @@ class Module(module_base.Base):
                 p = p.replace('{extension}', ext)
                 result = self.send(p, self.headers, self.cookies)
                 if result and result.url == p and result.status_code == 200:
+                    working += 1
                     results.append(result.url)
         return results
 

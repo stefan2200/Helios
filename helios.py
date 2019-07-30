@@ -112,14 +112,13 @@ class Helios:
             if self.use_web_driver:
                 self.logger.info("Running GhostDriver")
 
-                m = mefjus(logger=self.log_level, driver_path=self.driver_path, use_proxy=self.use_proxy, proxy_port=self.proxy_port, use_https=scope.is_https)
-                m.show_browser = self.driver_show
+                m = mefjus(logger=self.log_level, driver_path=self.driver_path, use_proxy=self.use_proxy, proxy_port=self.proxy_port, use_https=scope.is_https, show_driver=self.driver_show)
                 results = m.run(todo)
                 for res in results:
                     if not scope.in_scope(res[0]):
                         self.logger.debug("IGNORE %s.. out-of-scope" % res)
                         continue
-                    if c.get_filetype(res[0]) not in c.allowed_filetypes:
+                    if c.get_filetype(res[0]) in c.blocked_filetypes:
                         self.logger.debug("IGNORE %s.. bad file-type" % res)
                         continue
                     if res in c.scraped_pages:

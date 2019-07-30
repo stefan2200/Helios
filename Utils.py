@@ -24,7 +24,7 @@ def params_from_str(string):
                 value = sub[1]
                 out[key] = value
             else:
-                out[key] = ""
+                out[param] = ""
     else:
         if "=" in string:
             sub = string.split('=')

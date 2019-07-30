@@ -5,11 +5,11 @@ try:
     import urlparse
 except ImportError:
     from urllib.parse import quote_plus
-    from urllib.parse import urlparse
-import module_base
+    import urllib.parse as urlparse
+import modules.module_base
 
 
-class Module(module_base.Base):
+class Module(modules.module_base.Base):
 
     def __init__(self):
         self.name = "Robots.txt"

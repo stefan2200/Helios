@@ -4,9 +4,10 @@ try:
     import urlparse
 except ImportError:
     import urllib.parse as urlparse
-import module_base
+import modules.module_base
 
-class Module(module_base.Base):
+
+class Module(modules.module_base.Base):
 
     def __init__(self):
         self.name = "sitemap.xml"

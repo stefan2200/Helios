@@ -1,4 +1,3 @@
-import module_base
 try:
     from urllib import quote_plus
 except ImportError:
@@ -6,7 +5,10 @@ except ImportError:
 import requests
 import time
 import random
-class Module(module_base.Base):
+import modules.module_base
+
+
+class Module(modules.module_base.Base):
     def __init__(self):
         self.name = "Blind SQL Injection (Time Based)"
         self.active = True

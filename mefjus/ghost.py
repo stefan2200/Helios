@@ -1,12 +1,11 @@
 from selenium.common.exceptions import UnexpectedAlertPresentException, WebDriverException
 from selenium.webdriver import Chrome, ChromeOptions
-import re
 import time
 import logging
 import sys
 import os
 import threading
-from miproxy.proxy import RequestInterceptorPlugin, ResponseInterceptorPlugin, AsyncMitmProxy
+from mefjus.proxy import RequestInterceptorPlugin, ResponseInterceptorPlugin, AsyncMitmProxy
 from filelock import Timeout, FileLock
 
 
@@ -94,7 +93,10 @@ class HTTPParser:
     def extract_host(headers):
         for row in headers:
             if ":" in row:
-                key, value = row.split(':')
+                pairs = row.split(':')
+                if len(pairs) > 2:
+                    continue
+                key, value = pairs[0], pairs[1]
                 key = key.strip()
                 value = value.strip()
                 if key.lower() == "host":
@@ -144,7 +146,7 @@ class DebugInterceptor(RequestInterceptorPlugin, ResponseInterceptorPlugin):
     def do_request(self, data):
         method, headers, path, postdata = HTTPParser.parse(data)
         host = HTTPParser.extract_host(headers)
-        lock = FileLock(self.proxy_log_lock, timeout=1)
+        lock = FileLock(self.proxy_log_lock, timeout=5)
         with lock:
             lock.acquire()
             with open(self.proxy_log, 'a') as f:
@@ -211,11 +213,12 @@ class mefjus:
     driver = None
     show_browser = None
 
-    def __init__(self, logger=logging.INFO, driver_path=None, proxy_port=3333, use_proxy=True, use_https=True):
+    def __init__(self, logger=logging.INFO, driver_path=None, proxy_port=3333, use_proxy=True, use_https=True, show_driver=False):
         if use_proxy:
             self.proxy = CustomProxy(logger=logger, proxy_port=proxy_port)
-        self.driver = GhostDriverInterface(logger=logger, custom_path=driver_path, proxy_port=proxy_port, use_proxy=use_proxy, show_browser=self.show_browser)
+        self.driver = GhostDriverInterface(logger=logger, custom_path=driver_path, proxy_port=proxy_port, use_proxy=use_proxy, show_browser=show_driver)
         self.use_https = use_https
+
     def close(self):
         if self.driver:
             self.driver.close()

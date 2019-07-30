@@ -1,9 +1,10 @@
 import random
 import requests
 import time
-import module_base
+import modules.module_base
 
-class Module(module_base.Base):
+
+class Module(modules.module_base.Base):
     cookies = None
     headers = None
 

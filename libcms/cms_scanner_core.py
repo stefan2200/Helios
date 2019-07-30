@@ -1,8 +1,10 @@
 import os
 import logging
 import sys
-from detector import CMSDetector
+from libcms.detector import CMSDetector
 
+
+# Main module loader for CMS Scanners
 class CustomModuleLoader:
     folder = ""
     blacklist = ['cms_scanner.py', '__init__.py']
@@ -11,7 +13,7 @@ class CustomModuleLoader:
     is_aggressive = False
     module = None
     # common paths for cms installations
-    cms_sub = ['wordpress', 'wp', 'magento', 'joomla', 'blog', 'magento', 'drupal']
+    cms_sub = ['wordpress', 'wp', 'magento', 'joomla', 'blog', 'drupal']
 
     def __init__(self, folder='scanners', blacklist=[], is_aggressive=False, log_level=logging.INFO):
         self.blacklist.extend(blacklist)
