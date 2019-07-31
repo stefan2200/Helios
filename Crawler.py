@@ -35,7 +35,7 @@ class Crawler:
 
     max_postdata_per_url = 10
     max_postdata_unique_keys = 5
-    blocked_filetypes = ['.jpg', '.png', '.gif', '.wav', '.mp3', '.mp4', '.3gp', '.js', '.css', 'jpeg']
+    blocked_filetypes = ['.jpg', '.png', '.gif', '.wav', '.mp3', '.mp4', '.3gp', '.js', '.css', 'jpeg', '.pdf', '.ico']
     output_filename = "tmp.json"
     thread_count = 5
     cookie = CookieLib()
@@ -81,7 +81,7 @@ class Crawler:
         loc = urlparse.urlparse(url).path.split('.')
         if len(loc) is 1:
             return None
-        return ".{0}".format(loc[len(loc)-1])
+        return ".{0}".format(loc[len(loc)-1].lower())
 
     def parse_url(self, url, rooturl):
         url = url.split('#')[0]
@@ -189,7 +189,7 @@ class Crawler:
             except Exception as e:
                 self.logger.warning("Error: %s" % str(e))
                 continue
-            self.logger.info("Todo: {0} Done: {1}".format(self.to_crawl.qsize(), len(self.scraped_pages)))
+            self.logger.debug("Todo: {0} Done: {1}".format(self.to_crawl.qsize(), len(self.scraped_pages)))
         if self.write_output:
             output = json.dumps(self.scraped_pages)
             with open(self.output_filename, 'w') as f:
@@ -214,6 +214,7 @@ class FormDataToolkit:
         for x in data:
             keys.append("{0}={1}".format(x, data[x]))
         return hashlib.md5('&'.join(keys).encode('utf-8')).hexdigest()
+
 
 # the Extractor class is used to extract forms from HTML
 # the default extract() method is equipped with the functionality to automatically fill in input fields
@@ -291,12 +292,18 @@ class Extractor:
         return res
 
     def generate_random(self, input_type, name):
+        # in some cases this allows the crawler to successfully register + login
         if not input_type:
             return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(self.random_text_size))
         if input_type == "email" or "mail" in name:
             if not self.user_email:
                 self.user_email = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(self.random_text_size)) + '@' + ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(self.random_text_size)) + '.com'
             return self.user_email
+        if input_type == "password" or "password" in name:
+            if not self.user_password:
+                self.user_password = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(self.random_text_size)) + '@' + ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(self.random_text_size)) + '.com'
+            return self.user_password
+
         if input_type in ['number', 'integer', 'decimal']:
             return 1
         return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(self.random_text_size))

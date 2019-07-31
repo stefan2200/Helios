@@ -1,16 +1,19 @@
 import time
-from metamonster.rpcclient import Client
-from metamonster.detector import PassiveDetector
-from metamonster.meta_executor import MetaExecutor
 import socket
 import os
 
 try:
     from urlparse import urlparse
     from Queue import Queue, Empty
+    from rpcclient import Client
+    from detector import PassiveDetector
+    from meta_executor import MetaExecutor
 except ImportError:
     from urllib.parse import urlparse
     from queue import Queue, Empty
+    from metamonster.rpcclient import Client
+    from metamonster.detector import PassiveDetector
+    from metamonster.meta_executor import MetaExecutor
 
 class MetaMonster:
     client = None
