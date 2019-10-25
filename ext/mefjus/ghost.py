@@ -1,12 +1,12 @@
-from selenium.common.exceptions import UnexpectedAlertPresentException, WebDriverException
+from selenium.common.exceptions import UnexpectedAlertPresentException
 from selenium.webdriver import Chrome, ChromeOptions
 import time
 import logging
 import sys
 import os
 import threading
-from mefjus.proxy import RequestInterceptorPlugin, ResponseInterceptorPlugin, AsyncMitmProxy
-from filelock import Timeout, FileLock
+from ext.mefjus.proxy import RequestInterceptorPlugin, ResponseInterceptorPlugin, AsyncMitmProxy
+from filelock import FileLock
 
 
 class GhostDriverInterface:

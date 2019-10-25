@@ -5,6 +5,7 @@ try:
 except ImportError:
     import urllib.parse as urlparse
 import modules.module_base
+from core.Utils import requests_response_to_dict
 
 
 class Module(modules.module_base.Base):
@@ -25,6 +26,7 @@ class Module(modules.module_base.Base):
             '{url}.txt'
         ]
         self.output = "vulns"
+        self.severity = 2
 
     def run(self, urls, headers={}, cookies={}):
         results = []
@@ -49,7 +51,7 @@ class Module(modules.module_base.Base):
                 result = self.send(p, self.headers, self.cookies)
                 if result and result.url == p and result.status_code == 200:
                     working += 1
-                    results.append(result.url)
+                    results.append({'request': requests_response_to_dict(result), "match": "Status code 200"})
         return results
 
     def send(self, url, params, data):

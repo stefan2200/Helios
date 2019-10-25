@@ -3,6 +3,7 @@
   "run_at": "fs",
   "options": ["discovery"],
   "find": "once",
+  "severity": 0,
   "data": {
     "url": "wp-login.php",
     "options": [

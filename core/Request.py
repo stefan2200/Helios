@@ -1,5 +1,5 @@
 import requests
-import Response
+from core import Response
 
 
 class Request:

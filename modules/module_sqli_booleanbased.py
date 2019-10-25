@@ -7,6 +7,7 @@ import time
 import random
 import re
 import modules.module_base
+from core.Utils import requests_response_to_dict
 
 
 class Module(modules.module_base.Base):
@@ -29,6 +30,7 @@ class Module(modules.module_base.Base):
 
         self.can_use_content_length = True
         self.is_stable = True
+        self.severity = 3
 
         self.auto = True
         self.headers = {}
@@ -55,7 +57,8 @@ class Module(modules.module_base.Base):
         for param in data:
             result = self.inject(base, param_data, data, parameter_get=None, parameter_post=param)
             if result:
-                results.append([url, data, 'POST', param, result])
+                response, match = result
+                results.append({'request': requests_response_to_dict(response), "match": match})
         return results
 
     def send(self, url, params, data=None):
@@ -119,7 +122,7 @@ class Module(modules.module_base.Base):
                     get_data = self.send(url, params=tmp, data=data)
                     datalen = self.getlen(get_data)
                     if get_data and datalen != datalen_true:
-                        return {
+                        return (get_data, {
                             "url": url,
                             "params": params,
                             "data": data,
@@ -133,7 +136,7 @@ class Module(modules.module_base.Base):
                                     "false_length": datalen
                                 }
                             }
-                        }
+                        })
 
         if parameter_post:
             tmp = dict(data)
@@ -171,7 +174,7 @@ class Module(modules.module_base.Base):
                     get_postdata = self.send(url, params=data, data=tmp)
                     datalen = self.getlen(get_postdata)
                     if get_postdata and datalen != datalen_true:
-                        return {
+                        return (get_postdata, {
                             "url": url,
                             "params": params,
                             "data": data,
@@ -185,4 +188,5 @@ class Module(modules.module_base.Base):
                                     "false_length": datalen
                                 }
                             }
-                        }
+                        })
+        return None

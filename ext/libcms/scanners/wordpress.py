@@ -28,7 +28,6 @@ class Scanner(cms_scanner.Scanner):
                 return version_check_1.group(1)
         check2_url = urljoin(url, 'wp-admin.php')
         text = self.get(check2_url)
-        text = self.get(url)
         if text:
             version_check_2 = re.search('wp-admin\.min\.css\?ver=(\d+\.\d+\.\d+)', text.text, re.IGNORECASE)
             if version_check_2:

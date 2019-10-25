@@ -2,6 +2,7 @@
   "name": "Server Backend System exposure",
   "run_at": "response",
   "find": "once",
+  "severity": 1,
   "options": ["passive"],
   "request": null,
   "matches": [

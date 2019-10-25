@@ -7,6 +7,7 @@ import copy
 import logging
 import sys
 
+
 class Scanner:
     queue = None
     pool = None
@@ -39,7 +40,10 @@ class Scanner:
             scanner = copy.copy(self.script_engine)
         else:
             scanner = self.script_engine
-        scanner.run_scripts(request_object)
+        try:
+            scanner.run_scripts(request_object)
+        except Exception as e:
+            self.logger.warning("Script error %s" % str(e))
         self.done += 1
 
     def run(self):

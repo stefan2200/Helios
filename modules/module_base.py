@@ -3,6 +3,7 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 
+
 class Base:
     module_types = []
     name = ""
@@ -12,6 +13,7 @@ class Base:
     should_run = True
     input = ""
     output = ""
+    severity = 0
 
     def run(self, url, data, headers, cookies):
         pass

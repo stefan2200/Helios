@@ -5,3 +5,4 @@ selenium
 pyOpenSSL
 filelock
 msgpack
+sqlite3

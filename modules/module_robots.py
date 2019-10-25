@@ -18,10 +18,10 @@ class Module(modules.module_base.Base):
         self.input = "base"
         self.output = "crawler"
 
-    def run(self, base, headers={}, cookies={}):
+    def run(self, url, data=None, headers=None, cookies=None):
         self.headers = headers
         self.cookies = cookies
-        url = urlparse.urljoin(base, '/robots.txt')
+        url = urlparse.urljoin(url, '/robots.txt')
         result = self.send(url, None, None)
         output = []
         if result:
@@ -29,9 +29,9 @@ class Module(modules.module_base.Base):
                 if "*" in entry:
                     # we do not want dem wildcard
                     continue
-                newurl = urlparse.urljoin(base, entry).strip()
+                newurl = urlparse.urljoin(url, entry).strip()
                 newurl = newurl.replace('$', '')
-                if newurl == base:
+                if newurl == url:
                     continue
                 if newurl not in output:
                     output.append(newurl)

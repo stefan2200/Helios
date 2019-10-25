@@ -2,6 +2,7 @@
   "name": "CGI-bin directory found",
   "run_at": "fs",
   "find": "once",
+  "severity": 0,
   "options": ["discovery"],
   "data": {
     "url": "cgi-bin/",

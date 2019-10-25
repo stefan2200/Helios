@@ -2,6 +2,7 @@
   "name":".htaccess discovery",
   "run_at":"fs",
   "find":"once",
+  "severity": 2,
   "options": ["discovery"],
   "request":null,
   "data":{

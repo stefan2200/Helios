@@ -1,6 +1,7 @@
 import os
 import logging
 import sys
+import json
 
 
 class CustomModuleLoader:
@@ -9,8 +10,9 @@ class CustomModuleLoader:
     modules = []
     logger = None
     options = None
+    writer = None
 
-    def __init__(self, folder='modules', blacklist=[], options=None, logger=logging.INFO):
+    def __init__(self, folder='modules', blacklist=[], options=None, logger=logging.INFO, database=None):
         self.blacklist.extend(blacklist)
         self.options = options
         self.folder = folder
@@ -23,6 +25,7 @@ class CustomModuleLoader:
         self.logger.addHandler(ch)
         self.logger.debug("Loading custom modules")
         self.load_modules()
+        self.writer = database
 
     def load(self, f):
         base = f.replace('.py', '')
@@ -68,6 +71,9 @@ class CustomModuleLoader:
                             results = module.run(url, data, headers, cookies)
                             if results and len(results):
                                 for r in results:
+                                    if self.writer:
+                                        self.writer.put(result_type="Module - Adv", script=module.name,
+                                                    severity=module.severity, text=json.dumps(r))
                                     self.logger.info("Module %s Discovered %s" % (module.name, r))
                                     output.extend([module.name, r])
                         except Exception as e:
@@ -79,6 +85,9 @@ class CustomModuleLoader:
                         if results and len(results):
                             for r in results:
                                 self.logger.info("Module %s Discovered %s" % (module.name, r))
+                                if self.writer:
+                                    self.writer.put(result_type="Module - Adv", script=module.name,
+                                                    severity=module.severity, text=json.dumps(r))
                                 output.extend([module.name, r])
                     except Exception as e:
                         self.logger.warning("Error executing module %s on urls: %s" % (module.name, str(e)))

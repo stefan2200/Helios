@@ -6,6 +6,7 @@ import requests
 import time
 import random
 import modules.module_base
+from core.Utils import requests_response_to_dict
 
 
 class Module(modules.module_base.Base):
@@ -28,6 +29,7 @@ class Module(modules.module_base.Base):
         self.cookies = {}
         self.input = "urldata"
         self.output = "vulns"
+        self.severity = 3
 
     def run(self, url, data={}, headers={}, cookies={}):
         if not self.active and 'passive' not in self.module_types:
@@ -64,12 +66,9 @@ class Module(modules.module_base.Base):
         except requests.Timeout:
             if self.has_read_timeout:
                 if self.timeout_state > self.max_timeout_state:
-                    r = raw_input('The site appears to be dead, press enter to try again, q to quit') if not self.auto else "q"
-                    if r.strip() == "q":
-                        self.close()
-                        return None
-                    else:
-                        return self.send(url, params, data, headers, cookies)
+                    self.close()
+                    return None
+
                 self.timeout_state += 1
                 sleeptime = self.timeout_state * 10
                 time.sleep(sleeptime)
@@ -146,7 +145,18 @@ class Module(modules.module_base.Base):
                     if eslaped > min_wait_time:
                         if self.validate(url, params, data, injection_value, original_value=params[parameter_get], parameter_post=None,
                                       parameter_get=parameter_get):
-                            return True
+                            return (object, {
+                                "url": url,
+                                "params": tmp,
+                                "data": data,
+                                "vuln_param": {
+                                    "injection": injection_value.upper(),
+                                    "GET": parameter_get,
+                                    "sleep": min_wait_time,
+                                    "response_time": eslaped
+
+                                }
+                            })
             return False
         if parameter_post:
             tmp = dict(data)
@@ -161,7 +171,18 @@ class Module(modules.module_base.Base):
                     if eslaped > min_wait_time:
                         if self.validate(url, params, data, injection_value, original_value=data[parameter_post], parameter_post=parameter_post,
                                       parameter_get=None):
-                            return True
+                            return (object, {
+                                "url": url,
+                                "params": params,
+                                "data": tmp,
+                                "vuln_param": {
+                                    "injection": injection_value.upper(),
+                                    "POST": parameter_post,
+                                    "sleep": min_wait_time,
+                                    "response_time": eslaped
+
+                                }
+                            })
             return False
 
 

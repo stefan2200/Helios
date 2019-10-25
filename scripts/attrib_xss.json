@@ -2,6 +2,7 @@
   "name": "Cross-Site Scripting (XSS)",
   "run_at": "request",
   "find": "many",
+  "severity": 3,
   "options": ["injection", "dangerous"],
   "request": ["parameters", "cookies"],
   "data": {

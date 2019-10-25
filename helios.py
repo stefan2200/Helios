@@ -1,18 +1,19 @@
-from Parser import *
-from Request import Request
-from Crawler import Crawler
-from Utils import uniquinize
+from core.Scripts import *
+from core.Request import Request
+from core.Crawler import Crawler
+from core.Utils import uniquinize
+from core.Output import SQLiteWriter
+from core.WebApps import WebAppModuleLoader
 import json
-from mefjus.ghost import mefjus
-from Scope import Scope
-import Modules
+from ext.mefjus.ghost import mefjus
+from core.Scope import Scope
+from core import Modules, Scanner
 import time
 import logging
 import sys
 import argparse
-import Scanner
-import libcms.cms_scanner_core
-from metamonster import metamonster
+import ext.libcms.cms_scanner_core
+from ext.metamonster import metamonster
 try:
     import urlparse
 except ImportError:
@@ -31,7 +32,7 @@ class Helios:
     output_file = None
     log_level = logging.INFO
     driver_path = None
-    _max_safe_threads = 10
+    _max_safe_threads = 25
     thread_count = 10
 
     proxy_port = 3333
@@ -52,6 +53,11 @@ class Helios:
     msf_autostart = False
 
     run_cms = True
+    scan_webapps = True
+
+    db = None
+    db_file = "helios.db"
+    scan_cookies = {}
 
     def start(self):
         self.logger = logging.getLogger("Helios")
@@ -67,10 +73,15 @@ class Helios:
             self.logger.warning("Number of threads %d is too high, defaulting to %d" % (self.thread_count, self._max_safe_threads))
             self.thread_count = self._max_safe_threads
 
+        self.db = SQLiteWriter()
+        self.db.open_db(self.db_file)
+        self.logger.info("Using SQLite database %s" % self.db_file)
+
     def run(self, start_url):
         self.start()
         start_time = time.time()
         scope = Scope(start_url)
+        self.db.start(start_url, scope.host)
         c = None
         self.logger.debug("Parsing scan options")
         if self.scanoptions:
@@ -81,17 +92,18 @@ class Helios:
                 self.scanoptions.append(opt)
                 self.logger.debug("Enabled option %s" % opt)
         if self.use_scripts:
-            loader = Modules.CustomModuleLoader(options=helios.scanoptions, logger=self.log_level)
+            loader = Modules.CustomModuleLoader(options=helios.scanoptions, logger=self.log_level, database=self.db)
 
         todo = []
+
+        s = ScriptEngine(options=helios.scanoptions, logger=self.log_level, database=self.db)
+
         if self.use_crawler:
             c = Crawler(base_url=start_url, logger=self.log_level)
             c.thread_count = self.thread_count
             c.max_urls = self.crawler_max_urls
             # discovery scripts, pre-run scripts and advanced modules
             if self.use_scripts:
-                s = ScriptEngine(options=helios.scanoptions, logger=self.log_level)
-
                 self.logger.info("Starting filesystem discovery (pre-crawler)")
                 new_links = s.run_fs(start_url)
 
@@ -106,33 +118,37 @@ class Helios:
 
             self.logger.info("Starting Crawler")
             c.run_scraper()
+            self.logger.debug("Cookies set during scan: %s" % (str(c.cookie.cookies)))
+            self.scan_cookies = c.cookie.cookies
 
             self.logger.info("Creating unique link/post data list")
             todo = uniquinize(c.scraped_pages)
-            if self.use_web_driver:
-                self.logger.info("Running GhostDriver")
-
-                m = mefjus(logger=self.log_level, driver_path=self.driver_path, use_proxy=self.use_proxy, proxy_port=self.proxy_port, use_https=scope.is_https, show_driver=self.driver_show)
-                results = m.run(todo)
-                for res in results:
-                    if not scope.in_scope(res[0]):
-                        self.logger.debug("IGNORE %s.. out-of-scope" % res)
-                        continue
-                    if c.get_filetype(res[0]) in c.blocked_filetypes:
-                        self.logger.debug("IGNORE %s.. bad file-type" % res)
-                        continue
-                    if res in c.scraped_pages:
-                        self.logger.debug("IGNORE %s.. exists" % res)
-                        continue
-                    else:
-                        todo.append(res)
-                        self.logger.debug("QUEUE %s" % res)
-                self.logger.info("Creating unique link/post data list")
-                old_num = len(todo)
-                todo = uniquinize(todo)
-                self.logger.debug("WebDriver discovered %d more url/post data pairs" % (len(todo) - old_num))
         else:
             todo = [start_url, None]
+
+        if self.use_web_driver:
+            self.logger.info("Running GhostDriver")
+
+            m = mefjus(logger=self.log_level, driver_path=self.driver_path, use_proxy=self.use_proxy, proxy_port=self.proxy_port, use_https=scope.is_https, show_driver=self.driver_show)
+            results = m.run(todo)
+            for res in results:
+                if not scope.in_scope(res[0]):
+                    self.logger.debug("IGNORE %s.. out-of-scope" % res)
+                    continue
+                if c.get_filetype(res[0]) in c.blocked_filetypes:
+                    self.logger.debug("IGNORE %s.. bad file-type" % res)
+                    continue
+                if res in c.scraped_pages:
+                    self.logger.debug("IGNORE %s.. exists" % res)
+                    continue
+                else:
+                    todo.append(res)
+                    self.logger.debug("QUEUE %s" % res)
+            self.logger.info("Creating unique link/post data list")
+            old_num = len(todo)
+            todo = uniquinize(todo)
+            self.logger.debug("WebDriver discovered %d more url/post data pairs" % (len(todo) - old_num))
+
         scanner = None
         post_results = []
         if self.use_scanner:
@@ -147,12 +163,27 @@ class Helios:
             scanner.run()
             if self.use_adv_scripts:
                 loader.logger.info("Running post scripts")
-                post_results = loader.run_post(todo)
+                post_results = loader.run_post(todo, cookies=self.scan_cookies)
         cms_results = None
         if self.run_cms:
-            cms_loader = libcms.cms_scanner_core.CustomModuleLoader(log_level=self.log_level)
+            cms_loader = ext.libcms.cms_scanner_core.CustomModuleLoader(log_level=self.log_level)
             cms_results = cms_loader.run_scripts(start_url)
+            if cms_results:
+                for cms in cms_results:
+                    for cms_result in cms_results[cms]:
+                        self.db.put(result_type="CMS Script", script=cms,
+                                    severity=0, text=cms_result)
 
+        webapp_results = None
+        if self.scan_webapps:
+            webapp_loader = WebAppModuleLoader(log_level=self.log_level)
+            webapp_loader.load_modules()
+            webapp_results = webapp_loader.run_scripts(start_url)
+            if webapp_results:
+                for webapp in webapp_results:
+                    for webapp_result in webapp_results[webapp]:
+                        self.db.put(result_type="WebApp Script", script=webapp,
+                                    severity=0, text=json.dumps(webapp_result))
         meta = {}
         if self.msf:
             monster = metamonster.MetaMonster(log_level=self.log_level)
@@ -182,8 +213,11 @@ class Helios:
             'results': scanner.script_engine.results if scanner else [],
             'metasploit': meta,
             'cms': cms_results,
+            'webapps': webapp_results,
             'post': post_results if self.use_adv_scripts else []
         }
+
+        self.db.end()
 
         if not self.output_file:
             with open('scan_results_%s.json' % scope.host, 'w') as f:
@@ -203,6 +237,7 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--crawl', help='Enable the crawler', dest='crawler', action='store_true')
     parser.add_argument('-d', '--driver', help='Run WebDriver for advanced discovery', dest='driver', action='store_true')
     parser.add_argument('--cms', help='Enable the CMS module', dest='cms_enabled', action='store_true', default=False)
+    parser.add_argument('--webapp', help='Enable scanning of web application frameworks like Tomcat / Jboss', dest='webapp_enabled', action='store_true', default=False)
     parser.add_argument('--driver-path', help='Set custom path for the WebDriver', dest='driver_path', default=None)
     parser.add_argument('--show-driver', help='Show the WebDriver window', dest='show_driver', default=None, action='store_true')
     parser.add_argument('--max-urls', help='Set max urls for the crawler', dest='maxurls', default=None)
@@ -243,6 +278,7 @@ if __name__ == "__main__":
         helios.use_scripts = opts.scripts
         helios.use_adv_scripts = opts.modules
         helios.use_crawler = opts.crawler
+        helios.scan_webapps = opts.webapp_enabled
         helios.run_cms = opts.cms_enabled
     helios.scanoptions = opts.custom_options
     helios.use_web_driver = opts.driver
