@@ -1,7 +1,7 @@
 import os
 import json
-from Engine import MatchObject, CustomRequestBuilder, RequestBuilder
-from Utils import has_seen_before, response_to_dict
+from core.Engine import MatchObject, CustomRequestBuilder, RequestBuilder
+from core.Utils import has_seen_before, response_to_dict
 import sys
 import logging
 try:
@@ -21,8 +21,9 @@ class ScriptEngine:
     s = None
     options = None
     log_level = logging.INFO
+    writer = None
 
-    def __init__(self, options=None, logger=logging.INFO):
+    def __init__(self, options=None, logger=logging.INFO, database=None):
         self.logger = self.logger = logging.getLogger("ScriptEngine")
         self.logger.setLevel(logger)
         ch = logging.StreamHandler(sys.stdout)
@@ -35,6 +36,7 @@ class ScriptEngine:
         self.options = options
         self.log_level = logger
         self.parse_scripts()
+        self.writer = database
 
     def parse_scripts(self):
         self.s = ScriptParser(logger=self.log_level)
@@ -70,6 +72,7 @@ class ScriptEngine:
             script_data = {
                 "name": script['name'],
                 "find": script['find'],
+                "severity": script['severity'],
                 "request": script['request'],
                 "data": script['data'] if 'data' in script else {},
                 "matches": matches
@@ -108,41 +111,56 @@ class ScriptEngine:
                         if mresult:
                             res = "%s [%s] > %s" % (script['name'], result.response.to_string(), mresult)
                             self.logger.info("Discovered: %s" % res)
+                            if self.writer:
+                                severity = script['severity'] if 'severity' in script else 0
+                                text = json.dumps({"request": response_to_dict(result.response), "match": mresult})
+                                self.writer.put(result_type="Basic Script - Filesystem", script=script['name'], severity=severity, text=text)
                             self.results.append({"script": script['name'], "match": mresult, "data": response_to_dict(result.response)})
             return links
 
     def run_scripts(self, request):
         for script in self.scripts_passive:
-            if str(script['find']) == "once":
-                if has_seen_before(script['name'], self.results):
-                    continue
             for match in script['matches']:
                 result = match.run(request.response)
                 if result:
                     res = "%s [%s] > %s" % (script['name'], request.response.to_string(), result)
                     self.logger.info("Discovered: %s" % res)
+                    if self.writer:
+                        severity = script['severity'] if 'severity' in script else 0
+                        text = json.dumps({"request": response_to_dict(request.response), "match": result})
+                        self.writer.put(result_type="Basic Script - Passive", script=script['name'],
+                                        severity=severity, text=text, allow_only_once=str(script['find']) == "once")
                     self.results.append(
                         {"script": script['name'], "match": result, "data": response_to_dict(request.response)})
         if self.can_exploit:
             for script in self.scripts_active:
-                r = RequestBuilder(
-                    req=request,
-                    inject_type=script['request'],
-                    inject_value=script['data']['inject_value'],
-                    matchobject=script['matches'],
-                    name=script['name']
-                )
-                results = r.run()
-                if results:
-                    for r in results:
-                        if r not in self.results:
-                            res = "[%s] URL %s > %s" % (script['name'], r['data']['request']['url'], r['match'])
-                            self.logger.info("Discovered: %s" % res)
-                            self.results.append(r)
+                try:
+                    r = RequestBuilder(
+                        req=request,
+                        inject_type=script['request'],
+                        inject_value=script['data']['inject_value'],
+                        matchobject=script['matches'],
+                        name=script['name']
+                    )
+                    results = []
+                    results = r.run()
+                    if results:
+                        for scan_result in results:
+                            if scan_result not in self.results:
+                                res = "[%s] URL %s > %s" % (script['name'], scan_result['request']['request']['url'], scan_result['match'])
+                                self.logger.info("Discovered: %s" % res)
+                                if self.writer:
+                                    severity = script['severity'] if 'severity' in script else 0
+                                    text = json.dumps(scan_result)
+                                    self.writer.put(result_type="Basic Script - Active", script=script['name'],
+                                                    severity=severity, text=text)
+                                self.results.append(res)
+                except Exception as e:
+                    self.logger.warning("Error running script %s: %s" % (script['name'], str(e)))
 
 
 class ScriptParser:
-    directory = 'scripts'
+    directory = '../scripts'
     root_dir = ''
     script_dir = ''
     scripts = []

@@ -2,7 +2,7 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
-from Utils import params_from_str
+from core.Utils import params_from_str
 import time
 import json
 import random
@@ -10,7 +10,7 @@ import re
 import string
 import hashlib
 import os
-from Engine import CookieLib
+from core.Engine import CookieLib
 import sys
 
 try:

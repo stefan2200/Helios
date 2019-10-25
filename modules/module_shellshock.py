@@ -5,6 +5,7 @@ try:
 except ImportError:
     import urllib.parse as urlparse
 import modules.module_base
+from core.Utils import requests_response_to_dict
 
 
 class Module(modules.module_base.Base):
@@ -18,6 +19,7 @@ class Module(modules.module_base.Base):
             '.cgi'
         ]
         self.output = "vulns"
+        self.severity = 3
 
     def run(self, urls, headers={}, cookies={}):
         results = []
@@ -29,7 +31,9 @@ class Module(modules.module_base.Base):
         for f in list_urls:
             for p in self.possibilities:
                 if p in f:
-                    self.test(f)
+                    result = self.test(f)
+                    if result:
+                        results.append(result)
         return results
 
     def test(self, url):
@@ -39,7 +43,9 @@ class Module(modules.module_base.Base):
         }
         result = self.send(url, headers=payload)
         if result and 'gid=' in result.text and 'uid=' in result.text:
-            return [url, "id command was executed"]
+            result_obj = {'request': requests_response_to_dict(result), "match": "Command was executed on server"}
+            return result_obj
+        return None
 
     def send(self, url, headers={}):
         result = None

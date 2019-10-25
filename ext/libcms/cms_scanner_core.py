@@ -1,7 +1,7 @@
 import os
 import logging
 import sys
-from libcms.detector import CMSDetector
+from ext.libcms.detector import CMSDetector
 
 
 # Main module loader for CMS Scanners
@@ -74,6 +74,7 @@ class CustomModuleLoader:
                     return {cms: results}
                 else:
                     self.logger.warning("No script was found for CMS %s" % cms)
+                    return None
 
 
         else:

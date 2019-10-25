@@ -1,7 +1,7 @@
 import re
 import fnmatch
-from Utils import *
-from Request import *
+from core.Utils import *
+from core.Request import *
 import copy
 try:
     from urlparse import urljoin, urlparse
@@ -63,7 +63,6 @@ class MatchObject:
     match_location = ""  # body, headers, cookie
     options = []
     name = "Template, please set name"
-
 
     def __init__(self, mtype, match, location, name, options=[]):
         self.match_type = mtype
@@ -212,7 +211,9 @@ class RequestBuilder:
         return None
 
     def found(self, response, match):
-        self.results.append({"match": match, "script": self.name, "data": response_to_dict(response)})
+        mobj = {"request": response_to_dict(response), "match": match}
+        if mobj not in self.results:
+            self.results.append(mobj)
 
     def run_on_parameters(self):
         original_url = self.initial_request.url
@@ -226,6 +227,7 @@ class RequestBuilder:
                 request = self.initial_request
                 request.url = "%s?%s" % (url, params_to_str(tmp))
                 response = self.execute(request)
+                result = None
                 result = self.test(response)
                 if result:
                     self.found(response, result)
@@ -248,6 +250,7 @@ class RequestBuilder:
                     self.found(response, result)
 
     def run(self):
+        self.results = []
         if "parameters" in self.itype:
             self.run_on_parameters()
         return self.results

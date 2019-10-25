@@ -1,19 +1,19 @@
 {
-  "name":".htpasswd discovery",
+  "name":"web.config discovery",
   "run_at":"fs",
   "find":"once",
-  "severity": 2,
+  "severity": 3,
   "options": ["discovery"],
   "request":null,
   "data":{
-    "url":".htpasswd"
+    "url":"web.config"
   },
   "matches":[
     {
       "type":"equals",
       "location":"status_code",
       "match":"200",
-      "name":".htpasswd match code 200",
+      "name":"web.config match code 200",
       "options":[
         "ignore_case"
       ]

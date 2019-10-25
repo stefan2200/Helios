@@ -7,6 +7,7 @@ import time
 import random
 import re
 import modules.module_base
+from core.Utils import requests_response_to_dict
 
 
 class Module(modules.module_base.Base):
@@ -29,6 +30,7 @@ class Module(modules.module_base.Base):
 
         self.can_use_content_length = True
         self.is_stable = True
+        self.severity = 3
 
         self.auto = True
         self.headers = {}
@@ -50,12 +52,14 @@ class Module(modules.module_base.Base):
         for param in param_data:
             result = self.inject(base, param_data, data, parameter_get=param, parameter_post=None)
             if result:
-                results.append([url, data, 'GET', param, result])
+                response, match = result
+                results.append({'request': requests_response_to_dict(response), "match": match})
 
         for param in data:
             result = self.inject(base, param_data, data, parameter_get=None, parameter_post=param)
             if result:
-                results.append([url, data, 'POST', param, result])
+                response, match = result
+                results.append({'request': requests_response_to_dict(response), "match": match})
         return results
 
     def send(self, url, params, data=None):
@@ -119,21 +123,15 @@ class Module(modules.module_base.Base):
                     get_data = self.send(url, params=tmp, data=data)
                     datalen = self.getlen(get_data)
                     if get_data and datalen != datalen_true:
-                        return {
-                            "url": url,
-                            "params": params,
-                            "data": data,
-                            "vuln_param": {
-                                "injection": injection.upper(),
-                                "GET": parameter_get,
+                        return (get_data, {"injection": injection.upper(),
+                                "parameter": parameter_get,
+                                "location": "url",
                                 "query_true": injection_query_true,
                                 "query_false": injection_query_false,
                                 "states": {
                                     "true_length": datalen_true,
                                     "false_length": datalen
-                                }
-                            }
-                        }
+                                }})
 
         if parameter_post:
             tmp = dict(data)
@@ -171,18 +169,13 @@ class Module(modules.module_base.Base):
                     get_postdata = self.send(url, params=data, data=tmp)
                     datalen = self.getlen(get_postdata)
                     if get_postdata and datalen != datalen_true:
-                        return {
-                            "url": url,
-                            "params": params,
-                            "data": data,
-                            "vuln_param": {
-                                "injection": injection.upper(),
-                                "POST": parameter_post,
-                                "query_true": injection_query_true,
-                                "query_false": injection_query_false,
-                                "states": {
-                                    "true_length": datalen_true,
-                                    "false_length": datalen
-                                }
-                            }
-                        }
+                        return (get_postdata, {"injection": injection.upper(),
+                                               "parameter": parameter_post,
+                                               "location": "url",
+                                               "query_true": injection_query_true,
+                                               "query_false": injection_query_false,
+                                               "states": {
+                                                   "true_length": datalen_true,
+                                                   "false_length": datalen
+                                               }})
+        return None

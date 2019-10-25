@@ -1,0 +1,90 @@
+<html>
+<head>
+<link rel="stylesheet" href="static/bootstrap.css">
+</head>
+<body>
+<div class="container">
+    <div class="card" id="card_scan">
+        <div class="card-header">
+            <div class="card-title">Scan selection</div>
+        </div>
+        <div class="card-body">
+            <ul class="list-group" id="scan_list">
+
+            </ul>
+        </div>
+    </div>
+    <div class="card" id="card_results">
+        <div class="card-header">
+            <div class="card-title">Scan Results</div>
+        </div>
+        <div class="card-body">
+            <ul class="list-group" id="result_list">
+
+            </ul>
+        </div>
+    </div>
+
+</div>
+<script src="static/jquery-3.4.1.js" type="text/javascript"></script>
+<script src="static/bootstrap.js" type="text/javascript"></script>
+<script>
+    $.getJSON("/scans", function(data){
+        $.each(data, function(index, value){
+            var element = $('<li class="list-group-item list-group-item"></li>');
+            element.append("<h5 onclick='load(" + value.id + ")'>" + value.domain + "</h5>");
+            element.append("<hr />");
+            element.append("<p>Entry: <a href='"+value.start_url+"'>"+value.start_url+"</a><br /> Start: " + value.started + " <br />End: " + value.ended + "</p>");
+            $('#scan_list').append(element);
+        });
+    });
+
+    function bs4_color(severity) {
+        switch(severity) {
+            case 0:
+                return '-secondary'
+            case 1:
+                return '-info'
+            case 2:
+                return '-warning'
+            case 3:
+                return '-danger'
+            default:
+                return '-secondary'
+        }
+    }
+
+    function bs4_txt(severity) {
+        switch(severity) {
+            case 0:
+                return 'Informational'
+            case 1:
+                return 'Low risk'
+            case 2:
+                return 'Medium risk'
+            case 3:
+                return 'High risk'
+            default:
+                return 'Debug'
+        }
+    }
+
+    function load(scan_id) {
+        $('#result_list').html('');
+        $('#card_scan').hide();
+        $.getJSON("/results/" + scan_id, function(data){
+            $.each(data, function(index, value){
+                var element = $('<li class="list-group-item list-group-item list-group-item' + bs4_color(value.severity) + '"></li>');
+                element.append("<h5>[" + bs4_txt(value.severity) + "] " + value.type + " / " + value.module + "</h5>");
+                element.append("<hr />");
+                element.append("<p>Detected on: " + value.detected + "</p>");
+                var data = value.data;
+                var parsed = JSON.parse(data);
+                element.append("<pre>" + JSON.stringify(parsed, undefined, 2) + "</pre>");
+                $('#result_list').append(element);
+            });
+        });
+    }
+</script>
+</body>
+</html>

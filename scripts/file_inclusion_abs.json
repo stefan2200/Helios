@@ -2,6 +2,7 @@
   "name": "Local File Inclusion (Absolute Path)",
   "run_at": "request",
   "find": "many",
+  "severity": 3,
   "options": ["injection"],
   "request": ["parameters", "cookies"],
   "data": {

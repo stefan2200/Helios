@@ -60,6 +60,7 @@ def aspx_strip_internal(post):
             out[name] = value
     return out
 
+
 # generate unique url / post data pairs because we do not care about other variations during scanning
 def uniquinize(urls):
     out = []
@@ -94,11 +95,28 @@ def response_to_dict(response):
             'url': response.request_object.url,
             'data': response.request_object.data,
             'headers': dict(response.request_object.request_headers),
-            #'cookies': dict(response.request_object.response.cookies)
+            'cookies': dict(response.request_object.response.cookies)
         },
         'response': {
             'code': response.code,
             'headers': dict(response.headers),
             'content-type': response.content_type
+        }
+    }
+
+
+# same but for requests response
+def requests_response_to_dict(response):
+    return {
+        'request': {
+            'url': response.request.url,
+            'data': response.request.body,
+            'headers': dict(response.request.headers),
+            'cookies': dict(response.cookies)
+        },
+        'response': {
+            'code': response.status_code,
+            'headers': dict(response.headers),
+            'content-type': response.headers['Content-Type'] if 'Content-Type' in response.headers else ""
         }
     }

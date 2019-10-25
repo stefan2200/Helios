@@ -80,7 +80,7 @@ class CMSDetector:
         ####################################################
 
         magentoAdminCheck = self.get(base + '/index.php/admin/')
-        if magentoAdminCheck.status_code == 200 and 'login' in magentoAdminCheck.text and "404" not in magentoAdminCheck.text:
+        if magentoAdminCheck.status_code == 200 and 'login' in magentoAdminCheck.text and 'magento' in magentoAdminCheck.text and "404" not in magentoAdminCheck.text:
             return "magento"
 
         magentoRelNotesCheck = self.get(base + '/RELEASE_NOTES.txt')

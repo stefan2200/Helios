@@ -11,9 +11,10 @@ try:
 except ImportError:
     from urllib.parse import urlparse
     from queue import Queue, Empty
-    from metamonster.rpcclient import Client
-    from metamonster.detector import PassiveDetector
-    from metamonster.meta_executor import MetaExecutor
+    from ext.metamonster.rpcclient import Client
+    from ext.metamonster.detector import PassiveDetector
+    from ext.metamonster.meta_executor import MetaExecutor
+
 
 class MetaMonster:
     client = None
@@ -173,7 +174,6 @@ class MetaMonster:
         self.results['launched'] = exploits
 
         self.results['parameters'] = self.msf['parameters']
-
 
     def create_queries(self):
         self.client.logger.debug("Starting query creation")

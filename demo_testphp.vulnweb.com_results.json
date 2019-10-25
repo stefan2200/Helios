@@ -1,0 +1,451 @@
+[{
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/secured/newuser.php\", \"headers\": {\"Content-Length\": \"217\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": \"uphone=c6u2s2yz&urname=q4fp93tt&uuname=aaaaa%27+or+sleep%287%29+or+%27a%27%3D%27&upass=qdobg61i%40okce1szb.com&ucc=swk6t72q&upass2=qdobg61i%40okce1szb.com&uaddress=b9kg4c1m&uemail=fpmac89s%40405vmij5.com&signup=signup\"}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:38:12 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"server_sleep\": 7.077999830245972, \"injection\": \"aaaaa' or sleep(7) or 'a'='\", \"parameter\": \"uuname\", \"location\": \"body\"}}",
+    "detected": "2019-10-25 15:51:26",
+    "id": 50,
+    "module": "Blind SQL Injection (Time Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/login.php\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:36:31 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"server_sleep\": 10.156999826431274, \"injection\": \"aaaaa' or sleep(10) or 'a'='\", \"parameter\": \"pass\", \"location\": \"body\"}}",
+    "detected": "2019-10-25 15:49:48",
+    "id": 49,
+    "module": "Blind SQL Injection (Time Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/login.php\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:36:11 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"server_sleep\": 7.109999895095825, \"injection\": \"aaaaa' or sleep(7) or 'a'='\", \"parameter\": \"uname\", \"location\": \"body\"}}",
+    "detected": "2019-10-25 15:49:47",
+    "id": 48,
+    "module": "Blind SQL Injection (Time Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/search.php?test=query\", \"headers\": {\"Content-Length\": \"43\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": \"searchFor=%27+or+sleep%289%29--&goButton=go\"}, \"response\": {\"headers\": {\"Date\": \"Sat, 10 Jan 1970 09:33:44 GMT\", \"Content-Length\": \"182\", \"Content-Type\": \"text/html\", \"Connection\": \"keep-alive\", \"Server\": \"nginx/1.4.1\"}, \"code\": 504, \"content-type\": \"text/html\"}}, \"match\": {\"server_sleep\": 60.073999881744385, \"injection\": \"' or sleep(9)--\", \"parameter\": \"searchFor\", \"location\": \"body\"}}",
+    "detected": "2019-10-25 15:47:48",
+    "id": 47,
+    "module": "Blind SQL Injection (Time Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/hpp/params.php?aaaa%2F=iu0aw4cq\", \"headers\": {\"Content-Length\": \"47\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": \"aaaa%2F=iu0aw4cq%27+AND+%28421860%3D421861%29--\"}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:32:40 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"query_false\": \"iu0aw4cq' AND (421860=421861)--\", \"states\": {\"false_length\": 0, \"true_length\": 7}, \"location\": \"url\", \"query_true\": \"iu0aw4cq' AND (421860=421860)--\", \"injection\": \"BOOL_STR_AND_COMMENT\", \"parameter\": \"aaaa/\"}}",
+    "detected": "2019-10-25 15:45:48",
+    "id": 46,
+    "module": "Blind SQL Injection (Boolean Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/listproducts.php?artist=-1+OR+%28376444%3D376445%29\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:32:27 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"query_false\": \"-1 OR (376444=376445)\", \"states\": {\"false_length\": 4699, \"true_length\": 49413}, \"location\": \"url\", \"query_true\": \"-1 OR (376444=376444)\", \"injection\": \"BOOL_INT_OR\", \"parameter\": \"artist\"}}",
+    "detected": "2019-10-25 15:45:35",
+    "id": 45,
+    "module": "Blind SQL Injection (Boolean Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/product.php?pic=-1+OR+%28966733%3D966734%29\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:32:25 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"query_false\": \"-1 OR (966733=966734)\", \"states\": {\"false_length\": 5056, \"true_length\": 6428}, \"location\": \"url\", \"query_true\": \"-1 OR (966733=966733)\", \"injection\": \"BOOL_INT_OR\", \"parameter\": \"pic\"}}",
+    "detected": "2019-10-25 15:45:33",
+    "id": 44,
+    "module": "Blind SQL Injection (Boolean Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/login.php\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:32:23 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"query_false\": \"invalid' OR (944357=944358) OR 'a'='b\", \"states\": {\"false_length\": 5523, \"true_length\": 5955}, \"location\": \"url\", \"query_true\": \"invalid' OR (944357=944357) OR 'a'='b\", \"injection\": \"BOOL_STR_OR\", \"parameter\": \"uname\"}}",
+    "detected": "2019-10-25 15:45:32",
+    "id": 42,
+    "module": "Blind SQL Injection (Boolean Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/login.php\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:32:24 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"query_false\": \"invalid' OR (628439=628440) OR 'a'='b\", \"states\": {\"false_length\": 5523, \"true_length\": 5955}, \"location\": \"url\", \"query_true\": \"invalid' OR (628439=628439) OR 'a'='b\", \"injection\": \"BOOL_STR_OR\", \"parameter\": \"pass\"}}",
+    "detected": "2019-10-25 15:45:32",
+    "id": 43,
+    "module": "Blind SQL Injection (Boolean Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/artists.php?artist=-1+OR+%28125707%3D125708%29\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:32:18 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"query_false\": \"-1 OR (125707=125708)\", \"states\": {\"false_length\": 4735, \"true_length\": 6251}, \"location\": \"url\", \"query_true\": \"-1 OR (125707=125707)\", \"injection\": \"BOOL_INT_OR\", \"parameter\": \"artist\"}}",
+    "detected": "2019-10-25 15:45:27",
+    "id": 41,
+    "module": "Blind SQL Injection (Boolean Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/listproducts.php?cat=-1+OR+%28473000%3D473001%29\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:32:18 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": {\"query_false\": \"-1 OR (473000=473001)\", \"states\": {\"false_length\": 4699, \"true_length\": 49413}, \"location\": \"url\", \"query_true\": \"-1 OR (473000=473000)\", \"injection\": \"BOOL_INT_OR\", \"parameter\": \"cat\"}}",
+    "detected": "2019-10-25 15:45:26",
+    "id": 40,
+    "module": "Blind SQL Injection (Boolean Based)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/index.bak\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"Content-Length\": \"3265\", \"Accept-Ranges\": \"bytes\", \"Server\": \"nginx/1.4.1\", \"Last-Modified\": \"Wed, 11 May 2011 10:27:48 GMT\", \"Connection\": \"keep-alive\", \"ETag\": \"\\\"4dca64a4-cc1\\\"\", \"Date\": \"Sat, 10 Jan 1970 09:31:57 GMT\", \"Content-Type\": \"text/plain\"}, \"code\": 200, \"content-type\": \"text/plain\"}}, \"match\": \"Status code 200\"}",
+    "detected": "2019-10-25 15:45:22",
+    "id": 38,
+    "module": "Backup Files",
+    "scan": 1,
+    "severity": 2,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/index.zip\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"Content-Length\": \"2586\", \"Accept-Ranges\": \"bytes\", \"Server\": \"nginx/1.4.1\", \"Last-Modified\": \"Wed, 14 Jan 1970 02:23:57 GMT\", \"Connection\": \"keep-alive\", \"ETag\": \"\\\"11453d-a1a\\\"\", \"Date\": \"Sat, 10 Jan 1970 09:31:57 GMT\", \"Content-Type\": \"application/zip\"}, \"code\": 200, \"content-type\": \"application/zip\"}}, \"match\": \"Status code 200\"}",
+    "detected": "2019-10-25 15:45:22",
+    "id": 39,
+    "module": "Backup Files",
+    "scan": 1,
+    "severity": 2,
+    "type": "Module - Adv"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/secured/newuser.php\", \"headers\": {\"Content-Length\": \"182\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"uphone\": \"c6u2s2yz\", \"urname\": \"q4fp93tt\", \"uuname\": \"8m9d7t8n\", \"upass\": \"qdobg61i@okce1szb.com\", \"ucc\": \"swk6t72q\", \"upass2\": \"qdobg61i@okce1szb.com\", \"uaddress\": \"b9kg4c1m\", \"uemail\": \"<xss></xss>\", \"signup\": \"signup\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:59 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:20",
+    "id": 36,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/secured/newuser.php\", \"headers\": {\"Content-Length\": \"197\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"uphone\": \"c6u2s2yz\", \"urname\": \"q4fp93tt\", \"uuname\": \"<xss></xss>\", \"upass\": \"qdobg61i@okce1szb.com\", \"ucc\": \"swk6t72q\", \"upass2\": \"qdobg61i@okce1szb.com\", \"uaddress\": \"b9kg4c1m\", \"uemail\": \"fpmac89s@405vmij5.com\", \"signup\": \"signup\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:32:00 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:20",
+    "id": 37,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/secured/newuser.php\", \"headers\": {\"Content-Length\": \"197\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"uphone\": \"c6u2s2yz\", \"urname\": \"q4fp93tt\", \"uuname\": \"8m9d7t8n\", \"upass\": \"qdobg61i@okce1szb.com\", \"ucc\": \"swk6t72q\", \"upass2\": \"qdobg61i@okce1szb.com\", \"uaddress\": \"<xss></xss>\", \"uemail\": \"fpmac89s@405vmij5.com\", \"signup\": \"signup\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:59 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:19",
+    "id": 34,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/secured/newuser.php\", \"headers\": {\"Content-Length\": \"197\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"uphone\": \"c6u2s2yz\", \"urname\": \"q4fp93tt\", \"uuname\": \"8m9d7t8n\", \"upass\": \"qdobg61i@okce1szb.com\", \"ucc\": \"<xss></xss>\", \"upass2\": \"qdobg61i@okce1szb.com\", \"uaddress\": \"b9kg4c1m\", \"uemail\": \"fpmac89s@405vmij5.com\", \"signup\": \"signup\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:59 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:19",
+    "id": 35,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/secured/newuser.php\", \"headers\": {\"Content-Length\": \"197\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"uphone\": \"<xss></xss>\", \"urname\": \"q4fp93tt\", \"uuname\": \"8m9d7t8n\", \"upass\": \"qdobg61i@okce1szb.com\", \"ucc\": \"swk6t72q\", \"upass2\": \"qdobg61i@okce1szb.com\", \"uaddress\": \"b9kg4c1m\", \"uemail\": \"fpmac89s@405vmij5.com\", \"signup\": \"signup\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:59 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:18",
+    "id": 32,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/secured/newuser.php\", \"headers\": {\"Content-Length\": \"197\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"uphone\": \"c6u2s2yz\", \"urname\": \"<xss></xss>\", \"uuname\": \"8m9d7t8n\", \"upass\": \"qdobg61i@okce1szb.com\", \"ucc\": \"swk6t72q\", \"upass2\": \"qdobg61i@okce1szb.com\", \"uaddress\": \"b9kg4c1m\", \"uemail\": \"fpmac89s@405vmij5.com\", \"signup\": \"signup\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:59 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:18",
+    "id": 33,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/hpp/params.php?p=valid&pp=%3Cxss%3E%3C%2Fxss%3E\", \"headers\": {\"Content-Length\": \"16\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"aaaa/\": \"iu0aw4cq\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:17",
+    "id": 30,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/secured/newuser.php\", \"headers\": {\"Content-Length\": \"187\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"uphone\": \"c6u2s2yz\", \"urname\": \"q4fp93tt\", \"uuname\": \"8m9d7t8n'\", \"upass\": \"qdobg61i@okce1szb.com\", \"ucc\": \"swk6t72q\", \"upass2\": \"qdobg61i@okce1szb.com\", \"uaddress\": \"b9kg4c1m\", \"uemail\": \"fpmac89s@405vmij5.com\", \"signup\": \"signup\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:59 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:17",
+    "id": 31,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/guestbook.php\", \"headers\": {\"Content-Length\": \"59\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"text\": \"8oz54x4g\", \"name\": \"<xss></xss>\", \"submit\": \"add message\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:16",
+    "id": 28,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/hpp/params.php?p=%3Cxss%3E%3C%2Fxss%3E&pp=12\", \"headers\": {\"Content-Length\": \"16\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"aaaa/\": \"iu0aw4cq\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:16",
+    "id": 29,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/search.php?test=query\", \"headers\": {\"Content-Length\": \"43\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"searchFor\": \"<xss></xss>\", \"goButton\": \"go\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:15",
+    "id": 26,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/guestbook.php\", \"headers\": {\"Content-Length\": \"65\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"text\": \"<xss></xss>\", \"name\": \"anonymous user\", \"submit\": \"add message\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:15",
+    "id": 27,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/hpp/params.php?p=%3Cxss%3E%3C%2Fxss%3E&pp=12\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:14",
+    "id": 24,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/hpp/params.php?p=valid&pp=%3Cxss%3E%3C%2Fxss%3E\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:14",
+    "id": 25,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/cart.php\", \"headers\": {\"Content-Length\": \"22\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"addcart\": \"1'\", \"price\": \"500\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:13",
+    "id": 22,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/cart.php\", \"headers\": {\"Content-Length\": \"22\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"addcart\": \"1\", \"price\": \"500'\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:13",
+    "id": 23,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/guestbook.php\", \"headers\": {\"Content-Length\": \"55\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"text\": \"8oz54x4g\", \"name\": \"anonymous user'\", \"submit\": \"add message\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:12",
+    "id": 20,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/guestbook.php\", \"headers\": {\"Content-Length\": \"55\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"text\": \"8oz54x4g\", \"name\": \"anonymous user\", \"submit\": \"add message'\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:12",
+    "id": 21,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/guestbook.php\", \"headers\": {\"Content-Length\": \"55\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"text\": \"8oz54x4g'\", \"name\": \"anonymous user\", \"submit\": \"add message\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:11",
+    "id": 18,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/userinfo.php\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": {\"uname\": \"9mxl95df\", \"pass\": \"mda7ex9r@zzht6x6p.com'\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:11",
+    "id": 19,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/search.php?test=query\", \"headers\": {\"Content-Length\": \"33\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"searchFor\": \"32hq3fux\", \"goButton\": \"go'\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:10",
+    "id": 16,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/userinfo.php\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": {\"uname\": \"9mxl95df'\", \"pass\": \"mda7ex9r@zzht6x6p.com\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:10",
+    "id": 17,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/search.php?test=query%27\", \"headers\": {\"Content-Length\": \"30\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"searchFor\": \"32hq3fux\", \"goButton\": \"go\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:09",
+    "id": 14,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/search.php?test=query\", \"headers\": {\"Content-Length\": \"33\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/x-www-form-urlencoded\"}, \"cookies\": {}, \"data\": {\"searchFor\": \"32hq3fux'\", \"goButton\": \"go\"}}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:56 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:09",
+    "id": 15,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/listproducts.php?cat=%3Cxss%3E%3C%2Fxss%3E\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:55 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:08",
+    "id": 12,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/showimage.php?file=%3Cxss%3E%3C%2Fxss%3E\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:55 GMT\", \"Content-Type\": \"image/jpeg\"}, \"code\": 200, \"content-type\": \"image/jpeg\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:08",
+    "id": 13,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/hpp/?pp=%3Cxss%3E%3C%2Fxss%3E\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:55 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:07",
+    "id": 10,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/listproducts.php?artist=%3Cxss%3E%3C%2Fxss%3E\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:55 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: <xss></xss> was found \"}",
+    "detected": "2019-10-25 15:45:07",
+    "id": 11,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/listproducts.php?cat=1%27\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:55 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:06",
+    "id": 8,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/product.php?pic=1%27\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:55 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:06",
+    "id": 9,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/artists.php?artist=1%27\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:55 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:05",
+    "id": 6,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/listproducts.php?artist=1%27\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:55 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: error.+?sql was found \"}",
+    "detected": "2019-10-25 15:45:05",
+    "id": 7,
+    "module": "SQL Injection",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/hpp/?pp=%22+onmouseover%3D%22xss%28%29%22+bad%3D%22\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:54 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Regex Match: \\\\=\\\"[^\\\"]*\\\" onmouseover\\\\=\\\"xss\\\\(\\\\)\\\" was found \"}",
+    "detected": "2019-10-25 15:45:04",
+    "id": 4,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/showimage.php?file=%22+onmouseover%3D%22xss%28%29%22+bad%3D%22\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:54 GMT\", \"Content-Type\": \"image/jpeg\"}, \"code\": 200, \"content-type\": \"image/jpeg\"}}, \"match\": \"Regex Match: \\\\=\\\"[^\\\"]*\\\" onmouseover\\\\=\\\"xss\\\\(\\\\)\\\" was found \"}",
+    "detected": "2019-10-25 15:45:04",
+    "id": 5,
+    "module": "Cross-Site Scripting (XSS)",
+    "scan": 1,
+    "severity": 3,
+    "type": "Basic Script - Active"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:48 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Header server: nginx/1.4.1 exists\"}",
+    "detected": "2019-10-25 15:45:03",
+    "id": 2,
+    "module": "Server header exposure",
+    "scan": 1,
+    "severity": 1,
+    "type": "Basic Script - Passive"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"X-Powered-By\": \"PHP/5.3.10-1~lucid+2uwsgi2\", \"Transfer-Encoding\": \"chunked\", \"Content-Encoding\": \"gzip\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:48 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"Header x-powered-by: PHP/5.3.10-1~lucid+2uwsgi2 exists\"}",
+    "detected": "2019-10-25 15:45:03",
+    "id": 3,
+    "module": "Server Backend System exposure",
+    "scan": 1,
+    "severity": 1,
+    "type": "Basic Script - Passive"
+  },
+  {
+    "data": "{\"request\": {\"request\": {\"url\": \"http://testphp.vulnweb.com/admin/\", \"headers\": {\"Connection\": \"keep-alive\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"User-Agent\": \"python-requests/2.21.0\"}, \"cookies\": {}, \"data\": null}, \"response\": {\"headers\": {\"Content-Encoding\": \"gzip\", \"Transfer-Encoding\": \"chunked\", \"Server\": \"nginx/1.4.1\", \"Connection\": \"keep-alive\", \"Date\": \"Sat, 10 Jan 1970 09:31:37 GMT\", \"Content-Type\": \"text/html\"}, \"code\": 200, \"content-type\": \"text/html\"}}, \"match\": \"(Admin directory found) status code: 200 was found\"}",
+    "detected": "2019-10-25 15:44:45",
+    "id": 1,
+    "module": "Admin directory found",
+    "scan": 1,
+    "severity": 0,
+    "type": "Basic Script - Filesystem"
+  }
+]

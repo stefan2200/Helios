@@ -2,6 +2,7 @@ import random
 import requests
 import time
 import modules.module_base
+from core.Utils import requests_response_to_dict
 
 
 class Module(modules.module_base.Base):
@@ -13,10 +14,13 @@ class Module(modules.module_base.Base):
         self.injections = {}
         self.module_types = ['injection', 'dangerous']
         self.possibilities = [
-            '<script>{injection_value}()</script>'
+            '<script>var a = {injection_value};</script>',
+            '<xss>var a = {injection_value};</xss>',
+            '<img src="{injection_value}" onerror="" />'
         ]
         self.input = "urls"
         self.output = "vuln"
+        self.severity = 3
 
     def run(self, urls, headers={}, cookies={}):
         self.cookies = cookies
@@ -45,7 +49,7 @@ class Module(modules.module_base.Base):
                 for p in self.possibilities:
                     payload = p.replace('{injection_value}', str(t))
                     if payload in result.text:
-                        return [self.injections[t], "Page reflection", url, data]
+                        return {'request': requests_response_to_dict(self.injections[t]), 'match': requests_response_to_dict(result)}
         return False
 
     def inject(self, url, params, data=None, parameter_get=None, parameter_post=None):
@@ -56,8 +60,8 @@ class Module(modules.module_base.Base):
                 payload = injection_value.replace('{injection_value}', str(random_int))
                 payload = payload.replace('{original_value}', str(params[parameter_get]))
                 tmp[parameter_get] = payload
-                self.injections[str(random_int)] = [url, tmp, data]
                 result = self.send(url, tmp, data)
+                self.injections[str(random_int)] = result
 
         if parameter_post:
             tmp = dict(data)
@@ -66,8 +70,8 @@ class Module(modules.module_base.Base):
                 payload = injection_value.replace('{injection_value}', str(random_int))
                 payload = payload.replace('{original_value}', str(data[parameter_post]))
                 tmp[parameter_post] = payload
-                self.injections[str(random_int)] = [url, params, tmp]
                 result = self.send(url, params, tmp)
+                self.injections[str(random_int)] = result
 
     def send(self, url, params, data):
         result = None
