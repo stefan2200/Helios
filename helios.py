@@ -83,6 +83,8 @@ class Helios:
         scope = Scope(start_url)
         self.db.start(start_url, scope.host)
         c = None
+        s = None
+        loader = None
         self.logger.debug("Parsing scan options")
         if self.scanoptions:
             vars = self.scanoptions.split(',')
@@ -91,12 +93,16 @@ class Helios:
                 opt = v.strip()
                 self.scanoptions.append(opt)
                 self.logger.debug("Enabled option %s" % opt)
-        if self.use_scripts or self.use_adv_scripts:
+        if self.use_scanner and not self.use_scripts:
+            self.use_scripts = True
+        if self.use_scripts:
+            s = ScriptEngine(options=helios.scanoptions, logger=self.log_level, database=self.db)
+        if self.use_adv_scripts:
             loader = Modules.CustomModuleLoader(options=helios.scanoptions, logger=self.log_level, database=self.db)
 
-        todo = []
 
-        s = ScriptEngine(options=helios.scanoptions, logger=self.log_level, database=self.db)
+
+        todo = []
 
         if self.use_crawler:
             c = Crawler(base_url=start_url, logger=self.log_level)
@@ -124,7 +130,7 @@ class Helios:
             self.logger.info("Creating unique link/post data list")
             todo = uniquinize(c.scraped_pages)
         else:
-            todo = [start_url, None]
+            todo = [[start_url, None]]
 
         if self.use_web_driver:
             self.logger.info("Running GhostDriver")
@@ -150,9 +156,11 @@ class Helios:
             self.logger.debug("WebDriver discovered %d more url/post data pairs" % (len(todo) - old_num))
 
         scanner = None
-        post_results = []
         if self.use_scanner:
             self.logger.info("Starting scan sequence")
+            if len(todo) < self.thread_count:
+                # for performance sake
+                self.thread_count = len(todo)
             scanner = Scanner.Scanner(logger=self.log_level, script_engine=s, thread_count=self.thread_count)
             for page in todo:
                 url, data = page
@@ -161,6 +169,8 @@ class Helios:
                 scanner.queue.put(req)
                 scanner.logger.debug("Queued %s %s" % (url, data))
             scanner.run()
+
+        post_results = []
         if self.use_adv_scripts:
             self.logger.info("Running post scripts")
             post_results = loader.run_post(todo, cookies=self.scan_cookies)

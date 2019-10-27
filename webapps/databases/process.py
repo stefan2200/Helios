@@ -4,9 +4,7 @@ import re
 
 
 pages = {
-    "Tomcat": "https://www.cvedetails.com/vulnerability-list/vendor_id-45/product_id-887/Apache-Tomcat.html",
-    "Struts": "https://www.cvedetails.com/vulnerability-list/vendor_id-45/product_id-6117/Apache-Struts.html",
-    "Jboss": "https://www.cvedetails.com/vulnerability-list/vendor_id-1845/Jboss.html"
+    "phpMyAdmin": "https://www.cvedetails.com/vulnerability-list/vendor_id-784/Phpmyadmin.html"
 }
 
 pool = {
@@ -69,7 +67,7 @@ def run():
             vs = get_versions(name, item)
             print("%d vuln versions of %s for %s" % (len(vs), name, item))
 
-    with open('tomcat_vulns.json', 'w') as output:
+    with open('phpmyadmin_vulns.json', 'w') as output:
         output.write(json.dumps(vuln_versions))
 
 

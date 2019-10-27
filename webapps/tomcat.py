@@ -70,29 +70,6 @@ class Scanner(base_app.BaseAPP):
             jboss_vulns = data['Jboss']
             self.match_versions(jboss_vulns, version_jboss, url)
 
-    def match_versions(self, vulns, version, url=None):
-        for vuln in vulns:
-            for vuln_version in vulns[vuln]:
-                if version == vuln_version:
-                    match_str = "Tomcat version %s appears to be vulnerable to %s (version match: %s)" % \
-                                (version, vuln, vuln_version)
-                    result = {
-                        'request': {'url': url},
-                        'match': match_str
-                    }
-                    self.logger.info(match_str)
-                    self.results.append(result)
-                    break
-                if version in vuln_version:
-                    match_str = "Tomcat version %s might be vulnerable to %s (version match: %s)" % \
-                                (version, vuln, vuln_version)
-                    result = {
-                        'request': {'url': url},
-                        'match': match_str
-                    }
-                    self.logger.info(match_str)
-                    self.results.append(result)
-
     def get_version_tomcat(self, url):
         rand_val = random.randint(9999, 999999)
         invalid_url = url + "a_%d.jsp" % rand_val if url.endswith('/') else url + "/a_%d.jsp" % rand_val
