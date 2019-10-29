@@ -1,5 +1,4 @@
 import requests
-import logging
 import os
 
 
@@ -30,7 +29,7 @@ class BaseAPP:
     def match_versions(self, vulns, version, url=None):
         for vuln in vulns:
             for vuln_version in vulns[vuln]:
-                if version == vuln_version:
+                if version == vuln_version or vuln_version.startswith(version):
                     match_str = "%s version %s appears to be vulnerable to %s (version match: %s)" % \
                                 (self.name, version, vuln, vuln_version)
                     result = {
@@ -40,7 +39,7 @@ class BaseAPP:
                     self.logger.info(match_str)
                     self.results.append(result)
                     break
-                if version in vuln_version:
+                elif vuln_version.startswith(version):
                     match_str = "%s version %s might be vulnerable to %s (version match: %s)" % \
                                 (self.name, version, vuln, vuln_version)
                     result = {

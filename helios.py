@@ -13,12 +13,15 @@ import logging
 import sys
 import argparse
 import ext.libcms.cms_scanner_core
+import urllib3
 from ext.metamonster import metamonster
 try:
     import urlparse
 except ImportError:
     # python 3 imports
     import urllib.parse as urlparse
+
+urllib3.disable_warnings()
 
 
 class Helios:
@@ -319,4 +322,8 @@ if __name__ == "__main__":
             helios.msf_ssl = False
         if opts.msf_uri:
             helios.msf_path = opts.msf_uri
-    helios.run(url)
+    try:
+        helios.run(url)
+    except KeyboardInterrupt:
+        helios.logger.warning("KeyboardInterrupt received, shutting down")
+        helios.db.end()

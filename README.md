@@ -13,25 +13,33 @@ The current version can detect the following vulnerabilities:
     - Reflected
     - Stored
 - File-inclusion
-    - Local file inclusion (readfile)
-    - Remote file inclusion (using api.myip.com)
+    - Local file inclusion
+    - Remote file inclusion
 - Command Injection
-    - Windows + Unix + OSX
 - Backup-files
 - Generic error disclosure
 - Source code disclosure
 - Web application fingerprint
-- CMS Vulns
-    - WordPress (advanced)
-    - Drupal (basic)
-    - Joomla (basic)
+- CMS Vulerability scanner for:
+    - WordPress
+    - Drupal
+    - Joomla
+    - Typo3
+    - Textpattern
+    - Magento
+    - Subrion
+    - CMS made simple
+    - Concrete5
+    - MODX Revolution
 - Automatic launching of Metasploit modules (through msfrpc)
+    - unsafe at the moment
     
 
 # Features
 - Uses multi-threading (very very fast)
 - Processes AJAX/XHR requests
 - Widely adaptable
+- No laggy interfaces, 100% console based
 
 
 # How to install
@@ -39,6 +47,9 @@ The current version can detect the following vulnerabilities:
 git clone https://github.com/stefan2200/Helios.git
 pip install -r requirements.txt
 python helios.py -h
+
+cd webapps/databases
+python update.py -a
 ```
 
 # How to use (Command Line)
@@ -94,7 +105,10 @@ Full scan
 helios.py -u "http://example.com/" -a --driver --options all --max-urls 1000
 
 Scan a single URL
-helios.py -u "http://example.com/vuln.php?id=1" -s --scripts
+helios.py -u "http://example.com/vuln.php?id=1" -s
+
+Scan webapps and CMS systems
+helios.py -u "http://example.com/blog/" --webapp --cms
 
 Pwn a web server
 helios.py -u "http://example.com/" --msf
@@ -128,6 +142,8 @@ print(s.results)
 
 # What is next?
 - create a fully working post back crawler / scanner for ASPX/JSP type sites
-- even more scripts
-- better output format (somewhat done)
+- multiple start URL's / multiple scopes
+- improve logging
+- generic detection script
+- migrate CMS scripts to webapp scripts
 

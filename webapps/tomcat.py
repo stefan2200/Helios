@@ -23,7 +23,7 @@ class Scanner(base_app.BaseAPP):
         rand_val = random.randint(9999, 999999)
         invalid_url = url + "a_%d.jsp" % rand_val if url.endswith('/') else url + "/a_%d.jsp" % rand_val
         invalid_result = self.send(invalid_url)
-        if 'Tomcat' in invalid_result.text:
+        if invalid_result and 'Tomcat' in invalid_result.text:
             self.logger.debug("Discovered Tomcat through 404 page")
             return True
 

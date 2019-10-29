@@ -301,7 +301,7 @@ class Extractor:
             return self.user_email
         if input_type == "password" or "password" in name:
             if not self.user_password:
-                self.user_password = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(self.random_text_size)) + '@' + ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(self.random_text_size)) + '.com'
+                self.user_password = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(self.random_text_size))
             return self.user_password
 
         if input_type in ['number', 'integer', 'decimal']:

@@ -1,74 +1,67 @@
 import json
 import requests
 import re
+import logging
 
 
-pages = {
-    "phpMyAdmin": "https://www.cvedetails.com/vulnerability-list/vendor_id-784/Phpmyadmin.html"
-}
+# some code to spider CVE entries (+ vulnerable versions) from cvedetails.com
+class CVEProcessor:
+    pool = {
 
-pool = {
+    }
 
-}
+    vuln_versions = {
 
-vuln_versions = {
+    }
+    logger = logging.getLogger("Updater")
 
-}
+    def parse_cve(self, name, text):
+        seen = []
+        for cve in re.findall(r'(CVE-\d+-\d+) security vulnerability details', text):
+            seen.append(cve)
 
-
-def parse_cve(name, text):
-    seen = []
-    for cve in re.findall(r'(CVE-\d+-\d+) security vulnerability details', text):
-        seen.append(cve)
-
-    if name in pool:
-        pool[name].extend(seen)
-    else:
-        pool[name] = seen
-    return seen
-
-
-def get_versions(name, cve):
-    if name not in vuln_versions:
-        vuln_versions[name] = {}
-    url = "https://www.cvedetails.com/cve/%s/" % cve
-    result = requests.get(url)
-    text = result.text
-    splitter = text.split('<table class="listtable" id="vulnprodstable">')[1]
-    splitter = splitter.split('</table>')[0]
-    versions = []
-    for x in re.findall(r'(?s)(<tr.+?</tr>)', splitter)[1:]:
-        version = re.findall(r'(?s)<td>(.+?)</td>', x)[3].strip()
-        if version not in versions:
-            versions.append(version)
-    vuln_versions[name][cve] = versions
-    return versions
-
-
-def get_cve_pages(name):
-    start_url = pages[name]
-    url = start_url
-    while 1:
-        result = requests.get(url)
-        found = parse_cve(name, result.text)
-        print("Found %d new CVE entries on page" % len(found))
-        nextpage = re.search(r'\(This Page\)\s*<a.+?href="(.+?)"', result.text)
-        if nextpage:
-            url = "https://www.cvedetails.com%s" % nextpage.group(1)
-            print("Nextpage: %s" % url)
+        if name in self.pool:
+            self.pool[name].extend(seen)
         else:
-            break
+            self.pool[name] = seen
+        return seen
 
+    def get_versions(self, name, cve):
+        if name not in self.vuln_versions:
+            self.vuln_versions[name] = {}
+        url = "https://www.cvedetails.com/cve/%s/" % cve
+        result = requests.get(url)
+        text = result.text
+        splitter = text.split('<table class="listtable" id="vulnprodstable">')[1]
+        splitter = splitter.split('</table>')[0]
+        versions = []
+        for x in re.findall(r'(?s)(<tr.+?</tr>)', splitter)[1:]:
+            version = re.findall(r'(?s)<td>(.+?)</td>', x)[3].strip()
+            if version not in versions:
+                versions.append(version)
+        self.vuln_versions[name][cve] = versions
+        return versions
 
-def run():
-    for name in pages:
-        get_cve_pages(name)
-        for item in pool[name]:
-            vs = get_versions(name, item)
-            print("%d vuln versions of %s for %s" % (len(vs), name, item))
+    def get_cve_pages(self, name, start_url):
+        url = start_url
+        while 1:
+            result = requests.get(url)
+            found = self.parse_cve(name, result.text)
+            self.logger.debug("Found %d new CVE entries on page" % len(found))
+            next_page = re.search(r'\(This Page\)\s*<a.+?href="(.+?)"', result.text)
+            if next_page:
+                url = "https://www.cvedetails.com%s" % next_page.group(1)
+                self.logger.debug("Next page: %s" % url)
+            else:
+                break
 
-    with open('phpmyadmin_vulns.json', 'w') as output:
-        output.write(json.dumps(vuln_versions))
+    def run(self, entries, output):
+        for name in entries:
+            self.get_cve_pages(name, entries[name])
+            for item in self.pool[name]:
+                vs = self.get_versions(name, item)
+                self.logger.debug("%d vuln versions of %s for %s" % (len(vs), name, item))
 
-
-run()
+        with open('%s_vulns.json' % output, 'w') as f:
+            self.logger.info("Writing CVE/Version combo to output file %s" % output)
+            f.write(json.dumps(self.vuln_versions))
