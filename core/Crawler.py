@@ -172,12 +172,13 @@ class Crawler:
     def scrape_page(self, url):
         url, data = url
         try:
-            res = requests.get(url, timeout=(3, 30), cookies=self.cookie.cookies, allow_redirects=False, headers=self.headers) if not data else requests.post(url, data, cookies=self.cookie.cookies, allow_redirects=False,  timeout=(3, 30))
+            res = requests.get(url, timeout=(3, 30), cookies=self.cookie.cookies, allow_redirects=False, headers=self.headers, verify=False) if not data else requests.post(url, data, cookies=self.cookie.cookies, allow_redirects=False, timeout=(3, 30), verify=False)
             return res
         except requests.RequestException:
             return
         except Exception as e:
             self.logger.warning("Error in thread: %s" % str(e))
+            return
 
     def has_page(self, url, data):
         for u, d in self.scraped_pages:

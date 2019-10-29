@@ -32,7 +32,8 @@ class Request:
                                        data=self.data,
                                        headers=self.headers,
                                        cookies=self.cookies,
-                                       allow_redirects=self.redirect)
+                                       allow_redirects=self.redirect,
+                                       verify=False)
             except:
                 result = -1
         else:
@@ -40,7 +41,8 @@ class Request:
                 result = requests.get(self.url,
                                       headers=self.headers,
                                       cookies=self.cookies,
-                                      allow_redirects=self.redirect)
+                                      allow_redirects=self.redirect,
+                                      verify=False)
             except:
                 result = -1
         if result == -1:

@@ -9,6 +9,7 @@ class BaseAPP:
     cookies = {}
     logger = None
     app_url = None
+    scope = None
 
     def detect(self, url):
         return False
@@ -65,5 +66,11 @@ class BaseAPP:
             else:
                 result = requests.get(url, headers=headers, cookies=cookies, allow_redirects=redirects, verify=False)
         except Exception as e:
+            self.logger.warning("Request Exception: %s" % str(e))
             pass
-        return result
+        if not self.scope:
+            return result
+        # check if current URL is still in scope (fixes /blog 302->blog.domain.com issues)
+        if result and self.scope.in_scope(result.url):
+            return result
+        return None

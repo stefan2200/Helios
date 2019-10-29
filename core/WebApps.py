@@ -46,9 +46,11 @@ class WebAppModuleLoader:
                 continue
             self.load(f)
 
-    def run_scripts(self, base, headers={}, cookies={}):
+    def run_scripts(self, base, headers={}, cookies={}, scope=None):
         results = {}
         for module in self.modules:
-            res = module.run(base)
+            module.cookies = cookies
+            module.scope = scope
+            module.run(base)
             results[module.name] = module.results
         return results

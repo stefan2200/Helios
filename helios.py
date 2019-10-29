@@ -196,7 +196,7 @@ class Helios:
         if self.scan_webapps:
             webapp_loader = WebAppModuleLoader(log_level=self.log_level)
             webapp_loader.load_modules()
-            webapp_results = webapp_loader.run_scripts(start_url)
+            webapp_results = webapp_loader.run_scripts(start_url, scope=scope)
             if webapp_results:
                 for webapp in webapp_results:
                     for webapp_result in webapp_results[webapp]:

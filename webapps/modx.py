@@ -33,8 +33,8 @@ class Scanner(base_app.BaseAPP):
 
                 if d == "manager" and 'core/modx.js' in response.text:
                     path = urljoin(url, '')
-                self.app_url = path
-                return True
+                    self.app_url = path
+                    return True
         return False
 
     def test(self, url):
