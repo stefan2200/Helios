@@ -29,7 +29,7 @@ class BaseAPP:
     def match_versions(self, vulns, version, url=None):
         for vuln in vulns:
             for vuln_version in vulns[vuln]:
-                if version == vuln_version or vuln_version.startswith(version):
+                if version == vuln_version:
                     match_str = "%s version %s appears to be vulnerable to %s (version match: %s)" % \
                                 (self.name, version, vuln, vuln_version)
                     result = {

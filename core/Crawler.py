@@ -51,8 +51,10 @@ class Crawler:
         re.compile('http-equiv="refresh.+?URL=[\'"](.+?)[\'"]')
     ]
     write_output = True
+    scope = None
+    base_url = None
 
-    def __init__(self, base_url, agent=None, logger=logging.INFO):
+    def __init__(self, base_url, agent=None, logger=logging.INFO, scope=None):
         self.base_url = base_url
         self.root_url = '{}://{}'.format(urlparse.urlparse(self.base_url).scheme, urlparse.urlparse(self.base_url).netloc)
         self.pool = ThreadPoolExecutor(max_workers=self.thread_count)
@@ -75,6 +77,7 @@ class Crawler:
         if not os.path.exists(self.data_dir):
             self.logger.info("Data directory %s does not exist, creating" % self.data_dir)
             os.mkdir(self.data_dir)
+        self.scope = scope
 
     def get_filetype(self, url):
         url = url.split('?')[0]
@@ -85,6 +88,7 @@ class Crawler:
 
     def parse_url(self, url, rooturl):
         url = url.split('#')[0]
+        url = url.strip()
         if url in self.ignored:
             return
         if self.get_filetype(url) in self.blocked_filetypes:
@@ -111,8 +115,12 @@ class Crawler:
             if [url, None] not in self.scraped_pages:
                 self.to_crawl.put([url, None])
         # javascript, raw data, mailto etc..
-        if ':' not in url:
+        if not url.startswith('javascript:') or url.startswith('data:') or url.startswith('mailto:'):
             url = urlparse.urljoin(rooturl, url)
+            if not self.scope.in_scope(url):
+                self.ignored.append(url)
+                self.logger.debug("Url %s will be ignored because out of scope" % url)
+                return
             if [url, None] not in self.scraped_pages:
                 self.to_crawl.put([url, None])
 
@@ -144,6 +152,10 @@ class Crawler:
             checksum = FormDataToolkit.get_checksum(data)
             if checksum not in self.get_col(self.postdata, 0):
                 if [url, data] not in self.scraped_pages:
+                    if not self.scope.in_scope(url):
+                        self.ignored.append(url)
+                        self.logger.debug("Url %s will be ignored because out of scope" % url)
+                        continue
                     self.to_crawl.put([url, data])
                 self.postdata.append([checksum, url, data])
 

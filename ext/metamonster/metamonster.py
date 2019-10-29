@@ -198,9 +198,8 @@ class MetaMonster:
 
         for keyword in tech:
             for search_type in self.exploit_types:
-                for os in os_versions:
+                for os_version in os_versions:
                     output.append(
-                        [os, search_type, keyword]
+                        [os_version, search_type, keyword]
                     )
         return output
-

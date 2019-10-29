@@ -2,10 +2,12 @@ try:
     from urlparse import urlparse
 except ImportError:
     from urllib.parse import urlparse
+import fnmatch
 
 
 class Scope:
     host = ""
+    scopes = []
     is_https = False
 
     def __init__(self, url):
@@ -16,4 +18,11 @@ class Scope:
 
     def in_scope(self, url):
         parsed = urlparse(url)
-        return parsed.hostname == self.host
+        if parsed.netloc == self.host:
+            return True
+        for sub_scope in self.scopes:
+            if "*" in sub_scope:
+                return fnmatch.fnmatch(parsed.netloc, sub_scope)
+            if sub_scope == parsed.netloc:
+                return True
+        return False

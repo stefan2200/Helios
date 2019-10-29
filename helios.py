@@ -80,19 +80,22 @@ class Helios:
         self.db.open_db(self.db_file)
         self.logger.info("Using SQLite database %s" % self.db_file)
 
-    def run(self, start_url):
+    def run(self, start_urls, scopes=None):
+        start_url = start_urls[0]
         self.start()
         start_time = time.time()
         scope = Scope(start_url)
+        if scopes:
+            scope.scopes = [x.strip() for x in scopes.split(',')]
         self.db.start(start_url, scope.host)
         c = None
         s = None
         loader = None
         self.logger.debug("Parsing scan options")
         if self.scanoptions:
-            vars = self.scanoptions.split(',')
+            scan_vars = self.scanoptions.split(',')
             self.scanoptions = []
-            for v in vars:
+            for v in scan_vars:
                 opt = v.strip()
                 self.scanoptions.append(opt)
                 self.logger.debug("Enabled option %s" % opt)
@@ -103,14 +106,16 @@ class Helios:
         if self.use_adv_scripts:
             loader = Modules.CustomModuleLoader(options=helios.scanoptions, logger=self.log_level, database=self.db)
 
-
-
         todo = []
 
         if self.use_crawler:
             c = Crawler(base_url=start_url, logger=self.log_level)
             c.thread_count = self.thread_count
             c.max_urls = self.crawler_max_urls
+            c.scope = scope
+            if len(start_urls) != 1:
+                for extra_url in start_urls[1:]:
+                    c.parse_url(extra_url, extra_url)
             # discovery scripts, pre-run scripts and advanced modules
             if self.use_scripts:
                 self.logger.info("Starting filesystem discovery (pre-crawler)")
@@ -245,7 +250,8 @@ class Helios:
 if __name__ == "__main__":
     usage = """%s: args""" % sys.argv[0]
     parser = argparse.ArgumentParser(usage)
-    parser.add_argument('-u', '--url', help='URL to start with', dest='url', required=True)
+    parser.add_argument('-u', '--url', help='URL to start with', dest='url', default=None)
+    parser.add_argument('--urls', help='file with URL\'s to start with', dest='urls', default=None)
     parser.add_argument('--user-agent', help='Set the user agent', dest='user_agent', default=None)
     parser.add_argument('-c', '--crawl', help='Enable the crawler', dest='crawler', action='store_true')
     parser.add_argument('-d', '--driver', help='Run WebDriver for advanced discovery', dest='driver', action='store_true')
@@ -255,6 +261,7 @@ if __name__ == "__main__":
     parser.add_argument('--show-driver', help='Show the WebDriver window', dest='show_driver', default=None, action='store_true')
     parser.add_argument('--max-urls', help='Set max urls for the crawler', dest='maxurls', default=None)
     parser.add_argument('-a', '--all', help='Run everything', dest='allin', default=None, action='store_true')
+    parser.add_argument('--scopes', help='Extra allowed scopes, comma separated hostnames (* can be used to wildcard)', dest='scopes', default=None)
 
     parser.add_argument('--no-proxy', help='Disable the proxy module for the WebDriver', dest='no_proxy', action='store_true')
     parser.add_argument('--proxy-port', help='Set a custom port for the proxy module, default: 3333', dest='proxy_port',
@@ -282,8 +289,18 @@ if __name__ == "__main__":
     parser.add_argument('-v', '--verbose', help='Verbose mode', dest='verbose', default=False, action='store_true')
 
     opts = parser.parse_args(sys.argv[1:])
+    urls = []
+    if not opts.url:
+        if not opts.urls:
+            print("-u or --urls is required to start")
+            sys.exit(1)
+        else:
+            with open(opts.urls, 'r') as urlfile:
+                urls = [x.strip() for x in urlfile.read().strip().split('\n')]
+                print("Got %d start URL's from file %s" % (len(urls), opts.urls))
+    else:
+        urls = [opts.url]
 
-    url = opts.url
     helios = Helios()
     helios.user_agent = opts.user_agent
     if not opts.allin:
@@ -323,7 +340,7 @@ if __name__ == "__main__":
         if opts.msf_uri:
             helios.msf_path = opts.msf_uri
     try:
-        helios.run(url)
+        helios.run(urls, opts.scopes)
     except KeyboardInterrupt:
         helios.logger.warning("KeyboardInterrupt received, shutting down")
         helios.db.end()
