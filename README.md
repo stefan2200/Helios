@@ -54,29 +54,48 @@ python update.py -a
 
 # How to use (Command Line)
 ```
-helios.py: -u URL args
+usage: helios.py: args [-h] [-u URL] [--urls URLS]
+                                 [--user-agent USER_AGENT] [-c] [-d] [--cms]
+                                 [--webapp] [--driver-path DRIVER_PATH]
+                                 [--show-driver] [--interactive]
+                                 [--max-urls MAXURLS] [-a] [--scopes SCOPES]
+                                 [--no-proxy] [--proxy-port PROXY_PORT]
+                                 [--threads THREADS] [-s] [--adv]
+                                 [--database DB] [-o OUTFILE]
+                                 [--options CUSTOM_OPTIONS] [--msf]
+                                 [--msf-host MSF_HOST] [--msf-port MSF_PORT]
+                                 [--msf-creds MSF_CREDS]
+                                 [--msf-endpoint MSF_URI]
+                                 [--msf-nossl MSF_NOSSL] [--msf-start] [-v]
 
 optional arguments:
   -h, --help            show this help message and exit
   -u URL, --url URL     URL to start with
+  --urls URLS           file with URL's to start with
   --user-agent USER_AGENT
                         Set the user agent
-  -c, --crawl           Enable the crawler
+  -c, --crawler         Enable the crawler
   -d, --driver          Run WebDriver for advanced discovery
+  --cms                 Enable the CMS module
+  --webapp              Enable scanning of web application frameworks like
+                        Tomcat / Jboss
   --driver-path DRIVER_PATH
                         Set custom path for the WebDriver
   --show-driver         Show the WebDriver window
+  --interactive         Dont close the WebDriver window until keypress
   --max-urls MAXURLS    Set max urls for the crawler
   -a, --all             Run everything
+  --scopes SCOPES       Extra allowed scopes, comma separated hostnames (* can
+                        be used to wildcard)
   --no-proxy            Disable the proxy module for the WebDriver
   --proxy-port PROXY_PORT
                         Set a custom port for the proxy module, default: 3333
   --threads THREADS     Set a custom number of crawling / scanning threads
   -s, --scan            Enable the scanner
   --adv                 Enable the advanced scripts
+  --database DB         The SQLite database to use
   -o OUTFILE, --output OUTFILE
                         Output file to write to (JSON)
-  --scripts             Enable the script engine
   --options CUSTOM_OPTIONS
                         Comma separated list of scan options (discovery,
                         passive, injection, dangerous, all)
@@ -91,7 +110,6 @@ optional arguments:
                         Disable SSL
   --msf-start           Start msfrpcd if not running already
   -v, --verbose         Verbose mode
-
 
 
 

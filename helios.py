@@ -5,7 +5,7 @@ from core.Utils import uniquinize
 from core.Output import SQLiteWriter
 from core.WebApps import WebAppModuleLoader
 import json
-from ext.mefjus.ghost import mefjus
+from ext.mefjus.ghost import Mefjus
 from core.Scope import Scope
 from core import Modules, Scanner
 import time
@@ -26,15 +26,8 @@ urllib3.disable_warnings()
 
 class Helios:
     logger = None
-    use_crawler = True
-    use_scanner = True
-    use_web_driver = False
-    use_scripts = True
-    use_adv_scripts = True
     crawler_max_urls = 200
     output_file = None
-    log_level = logging.INFO
-    driver_path = None
     _max_safe_threads = 25
     thread_count = 10
 
@@ -42,43 +35,37 @@ class Helios:
     driver_show = False
 
     use_proxy = True
-
-    user_agent = None
-    scanoptions = None
-
-    msf = False
-    msf_host = "localhost"
-    msf_port = 55553
-    msf_username = "msf"
-    msf_password = "msfrpcd"
-    msf_ssl = True
-    msf_path = "/api/"
-    msf_autostart = False
-
-    run_cms = True
-    scan_webapps = True
-
     db = None
-    db_file = "helios.db"
     scan_cookies = {}
+    options = None
+
+    def __init__(self, options):
+        self.options = options
 
     def start(self):
         self.logger = logging.getLogger("Helios")
-        self.logger.setLevel(self.log_level)
+        self.logger.setLevel(logging.DEBUG if self.options.verbose else logging.INFO)
         ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(self.log_level)
+        ch.setLevel(logging.DEBUG if self.options.verbose else logging.INFO)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         if not self.logger.handlers:
             self.logger.addHandler(ch)
         self.logger.info("Starting Helios")
+
+        try:
+            self.thread_count = int(self.options.threads)
+        except:
+            # None or invalid format
+            pass
         if self.thread_count > self._max_safe_threads:
-            self.logger.warning("Number of threads %d is too high, defaulting to %d" % (self.thread_count, self._max_safe_threads))
+            self.logger.warning("Number of threads %d is too high, defaulting to %d" %
+                                (self.thread_count, self._max_safe_threads))
             self.thread_count = self._max_safe_threads
 
         self.db = SQLiteWriter()
-        self.db.open_db(self.db_file)
-        self.logger.info("Using SQLite database %s" % self.db_file)
+        self.db.open_db(self.options.db)
+        self.logger.info("Using SQLite database %s" % self.options.db)
 
     def run(self, start_urls, scopes=None):
         start_url = start_urls[0]
@@ -92,43 +79,46 @@ class Helios:
         s = None
         loader = None
         self.logger.debug("Parsing scan options")
-        if self.scanoptions:
-            scan_vars = self.scanoptions.split(',')
-            self.scanoptions = []
+        scanoptions = []
+        if self.options.custom_options:
+            scan_vars = self.options.custom_options.split(',')
             for v in scan_vars:
                 opt = v.strip()
-                self.scanoptions.append(opt)
+                scanoptions.append(opt)
                 self.logger.debug("Enabled option %s" % opt)
-        if self.use_scanner and not self.use_scripts:
-            self.use_scripts = True
-        if self.use_scripts:
-            s = ScriptEngine(options=helios.scanoptions, logger=self.log_level, database=self.db)
-        if self.use_adv_scripts:
-            loader = Modules.CustomModuleLoader(options=helios.scanoptions, logger=self.log_level, database=self.db)
+        if self.options.scanner or self.options.allin:
+            s = ScriptEngine(options=scanoptions, logger=self.logger.getEffectiveLevel(), database=self.db)
+
+        if self.options.use_adv_scripts or self.options.allin:
+            loader = Modules.CustomModuleLoader(options=scanoptions,
+                                                logger=self.logger.getEffectiveLevel(),
+                                                database=self.db)
 
         todo = []
+        c = Crawler(base_url=start_url, logger=self.logger.getEffectiveLevel())
+        if self.options.use_crawler or self.options.allin:
 
-        if self.use_crawler:
-            c = Crawler(base_url=start_url, logger=self.log_level)
             c.thread_count = self.thread_count
-            c.max_urls = self.crawler_max_urls
+            c.max_urls = int(self.options.maxurls)
             c.scope = scope
+            if self.options.user_agent:
+                c.headers = {'User-Agent': self.options.user_agent}
             if len(start_urls) != 1:
                 for extra_url in start_urls[1:]:
                     c.parse_url(extra_url, extra_url)
             # discovery scripts, pre-run scripts and advanced modules
-            if self.use_scripts:
+            if self.options.scanner or self.options.allin:
                 self.logger.info("Starting filesystem discovery (pre-crawler)")
                 new_links = s.run_fs(start_url)
 
                 for newlink in new_links:
-                    c.to_crawl.put(newlink)
-                if self.use_adv_scripts:
-                    self.logger.info("Running custom scripts")
+                    c.parse_url(newlink, newlink)
+                if self.options.use_adv_scripts or self.options.allin:
+                    self.logger.info("Running custom scripts (pre-crawler)")
                     links = loader.base_crawler(start_url)
                     for link in links:
                         self.logger.debug("Adding link %s from post scripts" % link)
-                        c.to_crawl.put([link, None])
+                        c.parse_url(link, link)
 
             self.logger.info("Starting Crawler")
             c.run_scraper()
@@ -140,11 +130,16 @@ class Helios:
         else:
             todo = [[start_url, None]]
 
-        if self.use_web_driver:
+        if self.options.driver:
             self.logger.info("Running GhostDriver")
 
-            m = mefjus(logger=self.log_level, driver_path=self.driver_path, use_proxy=self.use_proxy, proxy_port=self.proxy_port, use_https=scope.is_https, show_driver=self.driver_show)
-            results = m.run(todo)
+            m = Mefjus(logger=self.logger.getEffectiveLevel(),
+                       driver_path=self.options.driver_path,
+                       use_proxy=self.options.proxy,
+                       proxy_port=self.options.proxy_port,
+                       use_https=scope.is_https,
+                       show_driver=self.options.show_driver or self.options.interactive)
+            results = m.run(todo, interactive=self.options.interactive)
             for res in results:
                 if not scope.in_scope(res[0]):
                     self.logger.debug("IGNORE %s.. out-of-scope" % res)
@@ -164,27 +159,29 @@ class Helios:
             self.logger.debug("WebDriver discovered %d more url/post data pairs" % (len(todo) - old_num))
 
         scanner = None
-        if self.use_scanner:
+        if self.options.scanner or self.options.allin:
             self.logger.info("Starting scan sequence")
             if len(todo) < self.thread_count:
                 # for performance sake
                 self.thread_count = len(todo)
-            scanner = Scanner.Scanner(logger=self.log_level, script_engine=s, thread_count=self.thread_count)
+            scanner = Scanner.Scanner(logger=self.logger.getEffectiveLevel(),
+                                      script_engine=s,
+                                      thread_count=self.thread_count)
             for page in todo:
                 url, data = page
-                req = Request(url, data=data, agent=self.user_agent)
+                req = Request(url, data=data, agent=self.options.user_agent)
                 req.run()
                 scanner.queue.put(req)
                 scanner.logger.debug("Queued %s %s" % (url, data))
             scanner.run()
 
         post_results = []
-        if self.use_adv_scripts:
+        if self.options.use_adv_scripts or self.options.allin:
             self.logger.info("Running post scripts")
             post_results = loader.run_post(todo, cookies=self.scan_cookies)
         cms_results = None
-        if self.run_cms:
-            cms_loader = ext.libcms.cms_scanner_core.CustomModuleLoader(log_level=self.log_level)
+        if self.options.cms_enabled or self.options.allin:
+            cms_loader = ext.libcms.cms_scanner_core.CustomModuleLoader(log_level=self.logger.getEffectiveLevel())
             cms_results = cms_loader.run_scripts(start_url)
             if cms_results:
                 for cms in cms_results:
@@ -193,25 +190,26 @@ class Helios:
                                     severity=0, text=cms_result)
 
         webapp_results = None
-        if self.scan_webapps:
-            webapp_loader = WebAppModuleLoader(log_level=self.log_level)
+        if self.options.webapp_enabled or self.options.allin:
+            webapp_loader = WebAppModuleLoader(log_level=self.logger.getEffectiveLevel())
             webapp_loader.load_modules()
-            webapp_results = webapp_loader.run_scripts(start_url, scope=scope)
+            webapp_results = webapp_loader.run_scripts(start_url, scope=scope, cookies=self.scan_cookies)
             if webapp_results:
                 for webapp in webapp_results:
                     for webapp_result in webapp_results[webapp]:
                         self.db.put(result_type="WebApp Script", script=webapp,
                                     severity=0, text=json.dumps(webapp_result))
         meta = {}
-        if self.msf:
-            monster = metamonster.MetaMonster(log_level=self.log_level)
-            monster.username = self.msf_username
-            monster.password = self.msf_password
-            monster.host = self.msf_host
-            monster.port = self.msf_port
-            monster.ssl = self.msf_ssl
-            monster.endpoint = self.msf_path
-            monster.should_start = self.msf_autostart
+        if self.options.msf:
+            monster = metamonster.MetaMonster(log_level=self.logger.getEffectiveLevel())
+            creds = self.options.msf_creds.split(':')
+            monster.username = creds[0]
+            monster.password = creds[1]
+            monster.host = self.options.msf_host
+            monster.port = self.options.msf_port
+            monster.ssl = self.options.msf_ssl
+            monster.endpoint = self.options.msf_uri
+            monster.should_start = self.options.msf_autostart
 
             monster.connect(start_url)
             if monster.client and monster.client.is_working:
@@ -227,24 +225,20 @@ class Helios:
             'scope': scope.host,
             'starturl': start_url,
             'crawled': len(c.scraped_pages) if c else 0,
-            'scanned': len(todo) if self.use_scanner else 0,
+            'scanned': len(todo) if self.options.scanner else 0,
             'results': scanner.script_engine.results if scanner else [],
             'metasploit': meta,
             'cms': cms_results,
             'webapps': webapp_results,
-            'post': post_results if self.use_adv_scripts else []
+            'post': post_results if self.options.use_adv_scripts else []
         }
 
         self.db.end()
 
-        if not self.output_file:
-            with open('scan_results_%s.json' % scope.host, 'w') as f:
+        if self.options.outfile:
+            with open(self.options.outfile, 'w') as f:
                 f.write(json.dumps(scan_tree))
-                self.logger.info("Wrote results to scan_results_%s.json" % scope.host)
-        else:
-            with open(self.output_file, 'w') as f:
-                f.write(json.dumps(scan_tree))
-                self.logger.info("Wrote results to %s" % self.output_file)
+                self.logger.info("Wrote results to %s" % self.options.outfile)
 
 
 if __name__ == "__main__":
@@ -253,17 +247,25 @@ if __name__ == "__main__":
     parser.add_argument('-u', '--url', help='URL to start with', dest='url', default=None)
     parser.add_argument('--urls', help='file with URL\'s to start with', dest='urls', default=None)
     parser.add_argument('--user-agent', help='Set the user agent', dest='user_agent', default=None)
-    parser.add_argument('-c', '--crawl', help='Enable the crawler', dest='crawler', action='store_true')
-    parser.add_argument('-d', '--driver', help='Run WebDriver for advanced discovery', dest='driver', action='store_true')
+    parser.add_argument('-c', '--crawler', help='Enable the crawler', dest='use_crawler', action='store_true')
+    parser.add_argument('-d', '--driver', help='Run WebDriver for advanced discovery',
+                        dest='driver', action='store_true')
     parser.add_argument('--cms', help='Enable the CMS module', dest='cms_enabled', action='store_true', default=False)
-    parser.add_argument('--webapp', help='Enable scanning of web application frameworks like Tomcat / Jboss', dest='webapp_enabled', action='store_true', default=False)
+    parser.add_argument('--webapp', help='Enable scanning of web application frameworks like Tomcat / Jboss',
+                        dest='webapp_enabled', action='store_true', default=False)
     parser.add_argument('--driver-path', help='Set custom path for the WebDriver', dest='driver_path', default=None)
-    parser.add_argument('--show-driver', help='Show the WebDriver window', dest='show_driver', default=None, action='store_true')
-    parser.add_argument('--max-urls', help='Set max urls for the crawler', dest='maxurls', default=None)
+    parser.add_argument('--show-driver', help='Show the WebDriver window', dest='show_driver',
+                        default=None, action='store_true')
+    parser.add_argument('--interactive', help='Dont close the WebDriver window until keypress',
+                        dest='interactive', default=False,
+                        action='store_true')
+    parser.add_argument('--max-urls', help='Set max urls for the crawler', dest='maxurls', default=200)
     parser.add_argument('-a', '--all', help='Run everything', dest='allin', default=None, action='store_true')
-    parser.add_argument('--scopes', help='Extra allowed scopes, comma separated hostnames (* can be used to wildcard)', dest='scopes', default=None)
+    parser.add_argument('--scopes', help='Extra allowed scopes, comma separated hostnames (* can be used to wildcard)',
+                        dest='scopes', default=None)
 
-    parser.add_argument('--no-proxy', help='Disable the proxy module for the WebDriver', dest='no_proxy', action='store_true')
+    parser.add_argument('--no-proxy', help='Disable the proxy module for the WebDriver', dest='proxy',
+                        action='store_false', default=True)
     parser.add_argument('--proxy-port', help='Set a custom port for the proxy module, default: 3333', dest='proxy_port',
                         default=None)
     parser.add_argument('--threads', help='Set a custom number of crawling / scanning threads', dest='threads',
@@ -271,18 +273,20 @@ if __name__ == "__main__":
 
     parser.add_argument('-s', '--scan', help='Enable the scanner', dest='scanner',
                         default=False, action='store_true')
-    parser.add_argument('--adv', help='Enable the advanced scripts', dest='modules',
+    parser.add_argument('--adv', help='Enable the advanced scripts', dest='use_adv_scripts',
                         default=False, action='store_true')
+    parser.add_argument('--database', help='The SQLite database to use', dest='db', default="helios.db")
     parser.add_argument('-o', '--output', help='Output file to write to (JSON)', dest='outfile', default=None)
-    parser.add_argument('--scripts', help='Enable the script engine', dest='scripts', default=False, action='store_true')
-    parser.add_argument('--options', help='Comma separated list of scan options (discovery, passive, injection, dangerous, all)', dest='custom_options',
-                        default=None)
+    parser.add_argument('--options',
+                        help='Comma separated list of scan options (discovery, passive, injection, dangerous, all)',
+                        dest='custom_options', default=None)
     parser.add_argument('--msf', help='Enable the msfrpcd exploit module', dest='msf', default=False,
                         action='store_true')
-    parser.add_argument('--msf-host', help='Set the msfrpcd host', dest='msf_host', default=None)
-    parser.add_argument('--msf-port', help='Set the msfrpcd port', dest='msf_port', default=None)
-    parser.add_argument('--msf-creds', help='Set the msfrpcd username:password', dest='msf_creds', default=None)
-    parser.add_argument('--msf-endpoint', help='Set a custom endpoint URI', dest='msf_uri', default=None)
+    parser.add_argument('--msf-host', help='Set the msfrpcd host', dest='msf_host', default="localhost")
+    parser.add_argument('--msf-port', help='Set the msfrpcd port', dest='msf_port', default="55553")
+    parser.add_argument('--msf-creds', help='Set the msfrpcd username:password',
+                        dest='msf_creds', default="msf:msfrpcd")
+    parser.add_argument('--msf-endpoint', help='Set a custom endpoint URI', dest='msf_uri', default="/api/")
     parser.add_argument('--msf-nossl', help='Disable SSL', dest='msf_nossl', default=False)
     parser.add_argument('--msf-start', help='Start msfrpcd if not running already', dest='msf_autostart', default=False,
                         action='store_true')
@@ -301,46 +305,13 @@ if __name__ == "__main__":
     else:
         urls = [opts.url]
 
-    helios = Helios()
-    helios.user_agent = opts.user_agent
-    if not opts.allin:
-        helios.use_scanner = opts.scanner
-        helios.use_scripts = opts.scripts
-        helios.use_adv_scripts = opts.modules
-        helios.use_crawler = opts.crawler
-        helios.scan_webapps = opts.webapp_enabled
-        helios.run_cms = opts.cms_enabled
-    helios.scanoptions = opts.custom_options
-    helios.use_web_driver = opts.driver
-    helios.driver_path = opts.driver_path
-    helios.driver_show = opts.show_driver
-    helios.use_proxy = not opts.no_proxy
-    if opts.proxy_port:
-        helios.proxy_port = int(opts.proxy_port)
-    helios.driver_show = opts.show_driver
-    helios.output_file = opts.outfile
-    if opts.verbose:
-        helios.log_level = logging.DEBUG
-    if opts.threads:
-        helios.thread_count = int(opts.threads)
-    if opts.maxurls:
-        helios.crawler_max_urls = int(opts.maxurls)
-    if opts.msf:
-        helios.msf = True
-        if opts.msf_creds:
-            helios.msf_username, helios.msf_password = opts.msf_creds.split(':')
-        if opts.msf_port:
-            helios.msf_port = int(opts.msf_port)
-        if opts.msf_host:
-            helios.msf_host = opts.msf_host
-        if opts.msf_nossl:
-            helios.msf_ssl = False
-        if opts.msf_autostart:
-            helios.msf_ssl = False
-        if opts.msf_uri:
-            helios.msf_path = opts.msf_uri
+    helios = Helios(opts)
     try:
         helios.run(urls, opts.scopes)
     except KeyboardInterrupt:
         helios.logger.warning("KeyboardInterrupt received, shutting down")
+        helios.db.end()
+    except Exception as e:
+        helios.logger.error(str(e))
+        helios.logger.warning("Critical error received, shutting down")
         helios.db.end()

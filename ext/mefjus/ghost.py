@@ -17,10 +17,11 @@ class GhostDriverInterface:
     proxy_host = "127.0.0.1"
     proxy_port = 3333
 
-    def __init__(self, custom_path=None, logger=None, show_browser=False, use_proxy=True, proxy_port=3333):
+    def __init__(self, custom_path=None, logger=None, show_browser=False, use_proxy=True, proxy_port=None):
         if custom_path:
             self.driver_path = custom_path
-        self.proxy_port = proxy_port
+        if proxy_port:
+            self.proxy_port = int(proxy_port)
         self.logger = logging.getLogger("WebDriver")
         self.logger.setLevel(logger)
         ch = logging.StreamHandler(sys.stdout)
@@ -61,7 +62,6 @@ class GhostDriverInterface:
             self.logger.warning("Page %s threw an alert. disposing and requesting page again" % url)
             self.driver.get(url)
         except Exception as e:
-            raise
             self.logger.error("Page %s threw an error: %s" % (url, str(e)))
 
         time.sleep(self.page_sleep)
@@ -168,14 +168,14 @@ class CustomProxy:
     ca_dir = ""
     proxy_log = "output.txt"
 
-    def __init__(self, custom_path=None, cert=None, logger=logging.INFO, proxy_port=3333):
+    def __init__(self, custom_path=None, cert=None, logger=logging.INFO, proxy_port=None):
         self.logger.setLevel(logger)
         ch = logging.StreamHandler(sys.stdout)
         ch.setLevel(logger)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
-        self.proxy_port = proxy_port
-
+        if proxy_port:
+            self.proxy_port = int(proxy_port)
         if not self.logger.handlers:
             self.logger.addHandler(ch)
         self.logger.debug("Loaded Proxy")
@@ -205,7 +205,7 @@ class CustomProxy:
             return
 
 
-class mefjus:
+class Mefjus:
     seen = []
     ca_dir = "certs"
     ca_file = "mefjus.pem"
@@ -226,7 +226,7 @@ class mefjus:
         if self.proxy:
             self.proxy.proxy.server_close()
 
-    def run(self, urls):
+    def run(self, urls, interactive=False):
         if self.proxy:
             self.proxy.ca_dir = self.ca_dir
             if not os.path.exists(self.proxy.ca_dir):
@@ -239,6 +239,13 @@ class mefjus:
             if url not in self.seen:
                 self.seen.append(url)
                 self.driver.get(url)
+        if interactive:
+            print("Interactive mode enabled, the browser will continue to function and log proxy-request.")
+            print("Press any key to continue")
+            try:
+                x = input()
+            except:
+                pass
         self.close()
         return self.read_output()
 
@@ -246,4 +253,3 @@ class mefjus:
         with open('output.txt') as f:
             tree = HTTPParser.string_to_urltree(f.read(), use_https=self.use_https)
             return tree
-        return ""

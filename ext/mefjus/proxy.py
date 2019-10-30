@@ -197,6 +197,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
         # Append message body if present to the request
         if 'Content-Length' in self.headers:
+            req += "\r\n"
             req += self.rfile.read(int(self.headers['Content-Length'])).decode()
 
         # Send it down the pipe!
