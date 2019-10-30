@@ -2,8 +2,7 @@ from webapps import base_app
 import re
 import random
 import json
-import logging
-logging.basicConfig()
+
 
 # This script detects vulnerabilities in the following Java based products:
 # - Tomcat
@@ -13,7 +12,6 @@ class Scanner(base_app.BaseAPP):
     def __init__(self):
         self.name = "Tomcat"
         self.types = []
-        self.logger = logging.getLogger("WebApp %s" % self.name)
 
     def detect(self, url):
         result = self.send(url)

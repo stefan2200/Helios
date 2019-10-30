@@ -71,7 +71,7 @@ class Helios:
         start_url = start_urls[0]
         self.start()
         start_time = time.time()
-        scope = Scope(start_url)
+        scope = Scope(start_url, options=self.options.scope_options)
         if scopes:
             scope.scopes = [x.strip() for x in scopes.split(',')]
         self.db.start(start_url, scope.host)
@@ -112,7 +112,7 @@ class Helios:
                 new_links = s.run_fs(start_url)
 
                 for newlink in new_links:
-                    c.parse_url(newlink, newlink)
+                    c.parse_url(newlink[0], newlink[0])
                 if self.options.use_adv_scripts or self.options.allin:
                     self.logger.info("Running custom scripts (pre-crawler)")
                     links = loader.base_crawler(start_url)
@@ -263,6 +263,8 @@ if __name__ == "__main__":
     parser.add_argument('-a', '--all', help='Run everything', dest='allin', default=None, action='store_true')
     parser.add_argument('--scopes', help='Extra allowed scopes, comma separated hostnames (* can be used to wildcard)',
                         dest='scopes', default=None)
+    parser.add_argument('--scope-options', help='Various scope options',
+                        dest='scope_options', default=None)
 
     parser.add_argument('--no-proxy', help='Disable the proxy module for the WebDriver', dest='proxy',
                         action='store_false', default=True)
@@ -312,6 +314,9 @@ if __name__ == "__main__":
         helios.logger.warning("KeyboardInterrupt received, shutting down")
         helios.db.end()
     except Exception as e:
+        if helios.options.verbose:
+            helios.db.end()
+            raise
         helios.logger.error(str(e))
         helios.logger.warning("Critical error received, shutting down")
         helios.db.end()

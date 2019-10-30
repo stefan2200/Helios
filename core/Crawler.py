@@ -29,7 +29,7 @@ class Crawler:
     max_allowed_checksum = 5
 
     max_urls = 200
-    max_url_unique_keys = 1
+    max_url_unique_keys = 5
     url_variations = []
     ignored = []
 

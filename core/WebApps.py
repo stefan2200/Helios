@@ -30,6 +30,7 @@ class WebAppModuleLoader:
         try:
             command_module = __import__("webapps.%s" % base, fromlist=["webapps"])
             module = command_module.Scanner()
+            module.logger = self.logger
             module.logger.setLevel(self.logger.getEffectiveLevel())
             self.modules.append(module)
 

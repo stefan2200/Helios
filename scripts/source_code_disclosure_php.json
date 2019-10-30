@@ -9,7 +9,7 @@
     {
       "type": "regex",
       "location": "body",
-      "match": "(?s)(<\\?php?.+?\\?>)",
+      "match": "(?s)(<\\?php.+?\\?>)",
       "options": [
         "ignore_case",
         "strip_newlines"

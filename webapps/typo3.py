@@ -17,7 +17,6 @@ class Scanner(base_app.BaseAPP):
     def __init__(self):
         self.name = "Typo3"
         self.types = []
-        self.logger = logging.getLogger("WebApp %s" % self.name)
 
     def detect(self, url):
         directories = ['', 'typo3']
