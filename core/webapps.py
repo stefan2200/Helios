@@ -11,7 +11,7 @@ class WebAppModuleLoader:
     is_aggressive = False
     module = None
 
-    def __init__(self, folder='../webapps', blacklist=[], is_aggressive=False, log_level=logging.INFO):
+    def __init__(self, folder='../webapp', blacklist=[], is_aggressive=False, log_level=logging.INFO):
         self.blacklist.extend(blacklist)
         self.folder = os.path.join(os.path.dirname(__file__), folder)
         self.logger = logging.getLogger("Web App Scanner")
@@ -28,7 +28,7 @@ class WebAppModuleLoader:
         sys.path.insert(0, os.path.dirname(__file__))
         base = script.replace('.py', '')
         try:
-            command_module = __import__("webapps.%s" % base, fromlist=["webapps"])
+            command_module = __import__("webapp.%s" % base, fromlist=["webapp"])
             module = command_module.Scanner()
             module.logger = self.logger
             module.logger.setLevel(self.logger.getEffectiveLevel())

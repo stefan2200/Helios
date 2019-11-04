@@ -1,5 +1,5 @@
 import requests
-from core import Response
+from core import response
 
 
 class Request:
@@ -52,7 +52,7 @@ class Request:
         self.request_headers = result.request.headers
         self.is_done = True
         if result:
-            r = Response.Raw(
+            r = response.Raw(
                 text=result.text,
                 code=result.status_code,
                 cookies=result.cookies,

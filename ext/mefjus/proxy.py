@@ -10,17 +10,20 @@ except ImportError:
     from urllib.parse import urlparse, urlunparse, ParseResult
     from http.client import HTTPResponse
 
+# https://github.com/stefan2200/pymiproxy
 from tempfile import gettempdir
 from os import path, listdir
 from ssl import wrap_socket
 from socket import socket
 from re import compile
 from sys import argv
+try:
+    from OpenSSL.crypto import (X509Extension, X509, dump_privatekey, dump_certificate, load_certificate,
+                                load_privatekey, PKey, TYPE_RSA, X509Req)
+    from OpenSSL.SSL import FILETYPE_PEM
+except Exception as e:
+    print("Error loading OpenSSL modules for HTTPS proxy, the Mefjus module might not be usable: %s" % str(e))
 
-from OpenSSL.crypto import (X509Extension, X509, dump_privatekey, dump_certificate, load_certificate, load_privatekey,
-                            PKey, TYPE_RSA, X509Req)
-from OpenSSL.SSL import FILETYPE_PEM
-# https://github.com/stefan2200/pymiproxy
 
 
 class CertificateAuthority(object):

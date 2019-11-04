@@ -1,6 +1,6 @@
-from webapps import base_app
+from webapp import base_app
 import re
-from core.Utils import requests_response_to_dict
+from core.utils import requests_response_to_dict
 import json
 import logging
 import requests

@@ -1,27 +1,25 @@
-from core.Scripts import *
-from core.Request import Request
-from core.Crawler import Crawler
-from core.Utils import uniquinize
-from core.Output import SQLiteWriter
-from core.WebApps import WebAppModuleLoader
+from core.scripts import *
+from core.request import Request
+from core.crawler import Crawler
+from core.utils import uniquinize
+from core.database import SQLiteWriter
+from core.webapps import WebAppModuleLoader
 import json
 from ext.mefjus.ghost import Mefjus
-from core.Scope import Scope
-from core import Modules, Scanner
+from core.scope import Scope
+from core import modules, scanner
 import time
 import logging
 import sys
 import argparse
 import ext.libcms.cms_scanner_core
-import urllib3
 from ext.metamonster import metamonster
+import requests
 try:
     import urlparse
 except ImportError:
     # python 3 imports
     import urllib.parse as urlparse
-
-urllib3.disable_warnings()
 
 
 class Helios:
@@ -62,6 +60,9 @@ class Helios:
             self.logger.warning("Number of threads %d is too high, defaulting to %d" %
                                 (self.thread_count, self._max_safe_threads))
             self.thread_count = self._max_safe_threads
+        if not self.options.sslverify:
+            requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+            self.logger.info("Disabled SSL verification")
 
         self.db = SQLiteWriter()
         self.db.open_db(self.options.db)
@@ -90,7 +91,7 @@ class Helios:
             s = ScriptEngine(options=scanoptions, logger=self.logger.getEffectiveLevel(), database=self.db)
 
         if self.options.use_adv_scripts or self.options.allin:
-            loader = Modules.CustomModuleLoader(options=scanoptions,
+            loader = modules.CustomModuleLoader(options=scanoptions,
                                                 logger=self.logger.getEffectiveLevel(),
                                                 database=self.db)
 
@@ -158,22 +159,23 @@ class Helios:
             todo = uniquinize(todo)
             self.logger.debug("WebDriver discovered %d more url/post data pairs" % (len(todo) - old_num))
 
-        scanner = None
+        scanner_obj = None
         if self.options.scanner or self.options.allin:
             self.logger.info("Starting scan sequence")
             if len(todo) < self.thread_count:
                 # for performance sake
                 self.thread_count = len(todo)
-            scanner = Scanner.Scanner(logger=self.logger.getEffectiveLevel(),
+            scanner_obj = scanner.Scanner(logger=self.logger.getEffectiveLevel(),
                                       script_engine=s,
                                       thread_count=self.thread_count)
+            scanner_obj.copy_engine = self.options.optimize
             for page in todo:
                 url, data = page
                 req = Request(url, data=data, agent=self.options.user_agent)
                 req.run()
-                scanner.queue.put(req)
-                scanner.logger.debug("Queued %s %s" % (url, data))
-            scanner.run()
+                scanner_obj.queue.put(req)
+                scanner_obj.logger.debug("Queued %s %s" % (url, data))
+            scanner_obj.run()
 
         post_results = []
         if self.options.use_adv_scripts or self.options.allin:
@@ -226,7 +228,7 @@ class Helios:
             'starturl': start_url,
             'crawled': len(c.scraped_pages) if c else 0,
             'scanned': len(todo) if self.options.scanner else 0,
-            'results': scanner.script_engine.results if scanner else [],
+            'results': scanner_obj.script_engine.results if scanner_obj else [],
             'metasploit': meta,
             'cms': cms_results,
             'webapps': webapp_results,
@@ -268,10 +270,14 @@ if __name__ == "__main__":
 
     parser.add_argument('--no-proxy', help='Disable the proxy module for the WebDriver', dest='proxy',
                         action='store_false', default=True)
+    parser.add_argument('--optimize', help='Optimize the Scanner engine (uses more resources)', dest='optimize',
+                        action='store_true', default=False)
     parser.add_argument('--proxy-port', help='Set a custom port for the proxy module, default: 3333', dest='proxy_port',
                         default=None)
     parser.add_argument('--threads', help='Set a custom number of crawling / scanning threads', dest='threads',
                         default=None)
+    parser.add_argument('--sslverify', default=False, action="store_true", dest="sslverify",
+                        help="Enable SSL verification (requests will fail without proper cert)")
 
     parser.add_argument('-s', '--scan', help='Enable the scanner', dest='scanner',
                         default=False, action='store_true')

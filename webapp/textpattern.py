@@ -1,6 +1,6 @@
-from webapps import base_app
+from webapp import base_app
 import re
-from core.Utils import requests_response_to_dict
+from core.utils import requests_response_to_dict
 import json
 import logging
 import requests
@@ -11,36 +11,36 @@ except ImportError:
 
 
 # This script detects vulnerabilities in the following PHP based products:
-# - Subrion
+# - Textpattern
 class Scanner(base_app.BaseAPP):
 
     def __init__(self):
-        self.name = "Subrion"
+        self.name = "Textpattern"
         self.types = []
 
     def detect(self, url):
-        directories = ['', '_core', 'blog', 'subrion']
+        directories = ['', 'blog', 'textpattern']
         for d in directories:
             path = urljoin(url, d)
             response = self.send(path)
             if response and response.status_code == 200 and \
-                    ("Subrion" in response.text or 'jquery.js?fm=' in response.text):
+                    ("Textpattern" in response.text or '<body class="front-page"' in response.text):
                 self.app_url = path
                 return True
         return False
 
     def test(self, url):
-        cl_url = urljoin(url, "changelog.txt")
+        cl_url = urljoin(url, "README.txt")
         cl_data = self.send(cl_url)
         version = None
         if cl_data:
-            get_version = re.findall(r'From\s[\d\.]+\sto\s([\d\.]+)', cl_data.text)
-            if len(get_version):
-                version = get_version[-1:][0]
-                self.logger.info("%s version %s was identified from the changelog.txt file" % (self.name, version))
+            get_version = re.search(r'Textpattern CMS ([\d\.]+)', cl_data.text)
+            if get_version:
+                version = get_version.group(1)
+                self.logger.info("%s version %s was identified from the README.txt file" % (self.name, version))
 
         if version:
-            db = self.get_db("subrion_vulns.json")
+            db = self.get_db("textpattern_vulns.json")
             data = json.loads(db)
-            subrion_vulns = data['Subrion']
+            subrion_vulns = data['Textpattern']
             self.match_versions(subrion_vulns, version, url)

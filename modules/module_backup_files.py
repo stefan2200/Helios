@@ -5,7 +5,7 @@ try:
 except ImportError:
     import urllib.parse as urlparse
 import modules.module_base
-from core.Utils import requests_response_to_dict, random_string
+from core.utils import requests_response_to_dict, random_string
 
 
 class Module(modules.module_base.Base):

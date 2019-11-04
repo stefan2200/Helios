@@ -3,11 +3,9 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 import requests
-import time
 import random
-import re
 import modules.module_base
-from core.Utils import requests_response_to_dict
+from core.utils import requests_response_to_dict, random_string
 
 
 class Module(modules.module_base.Base):
@@ -94,6 +92,19 @@ class Module(modules.module_base.Base):
             get_firstpage = self.send(url, tmp, data)
             firstpage_len = self.getlen(get_firstpage)
 
+            get_firstpage_two = self.send(url, tmp, data)
+            second_page = self.getlen(get_firstpage_two)
+            if second_page != firstpage_len:
+                # cannot check with random page length (dynamic content)
+                return False
+            rstring = random_string()
+            tmp[parameter_get] = rstring
+            check_reflection = self.send(url, params=tmp, data=data)
+            if rstring in check_reflection.text:
+                # query values are reflected, cannot test using only page length
+                return False
+            tmp[parameter_get] = ogvalue
+
             for injection in self.possibilities:
                 injection_query = self.possibilities[injection]
 
@@ -108,9 +119,6 @@ class Module(modules.module_base.Base):
 
                 tmp[parameter_get] = injection_query_true
                 page_data = self.send(url, params=tmp, data=data)
-                if str(random_true) in page_data.text:
-                    # query values are reflected, cannot test using only page length
-                    continue
 
                 datalen_true = self.getlen(page_data)
 
@@ -139,6 +147,20 @@ class Module(modules.module_base.Base):
 
             get_firstpage = self.send(url, params, tmp)
             firstpage_len = self.getlen(get_firstpage)
+
+            get_firstpage_two = self.send(url, params, tmp)
+            second_page = self.getlen(get_firstpage_two)
+            if second_page != firstpage_len:
+                # cannot check with random page length (dynamic content)
+                return False
+
+            rstring = random_string()
+            tmp[parameter_post] = rstring
+            check_reflection = self.send(url, params=params, data=tmp)
+            if rstring in check_reflection.text:
+                # query values are reflected, cannot test using only page length
+                return False
+            tmp[parameter_post] = ogvalue
 
             for injection in self.possibilities:
                 injection_query = self.possibilities[injection]

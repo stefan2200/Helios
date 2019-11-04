@@ -1,8 +1,7 @@
 import random
 import requests
-import time
 import modules.module_base
-from core.Utils import requests_response_to_dict
+from core.utils import requests_response_to_dict
 
 
 class Module(modules.module_base.Base):

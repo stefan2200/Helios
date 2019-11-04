@@ -1,4 +1,4 @@
-from webapps import base_app
+from webapp import base_app
 import re
 import random
 import json

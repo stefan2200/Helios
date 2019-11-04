@@ -6,7 +6,7 @@ except ImportError:
 import copy
 import logging
 import sys
-
+import time
 
 class Scanner:
     queue = None
@@ -59,3 +59,5 @@ class Scanner:
                 self.logger.warning("Error: %s" % str(e))
                 continue
             self.logger.debug("Todo: {0} Done: {1}".format(self.queue.qsize(), self.done))
+
+        time.sleep(5)

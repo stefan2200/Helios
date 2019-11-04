@@ -1,7 +1,7 @@
 import re
 import fnmatch
-from core.Utils import *
-from core.Request import *
+from core.utils import *
+from core.request import *
 import copy
 try:
     from urlparse import urljoin, urlparse

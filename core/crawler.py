@@ -2,7 +2,7 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
-from core.Utils import params_from_str
+from core.utils import params_from_str
 import time
 import json
 import random
@@ -10,7 +10,7 @@ import re
 import string
 import hashlib
 import os
-from core.Engine import CookieLib
+from core.engine import CookieLib
 import sys
 
 try:
@@ -35,7 +35,8 @@ class Crawler:
 
     max_postdata_per_url = 10
     max_postdata_unique_keys = 5
-    blocked_filetypes = ['.jpg', '.png', '.gif', '.wav', '.mp3', '.mp4', '.3gp', '.js', '.css', 'jpeg', '.pdf', '.ico']
+    blocked_filetypes = ['.jpg', '.png', '.gif', '.wav', '.mp3', '.mp4', '.3gp', '.js', '.css', '.jpeg', '.pdf', '.ico',
+                         '.tiff', '.svg', '.doc', '.docx', '.xls', '.xlsx', '.woff', '.woff2', '.ttf', '.eot', '.ttf']
     output_filename = "tmp.json"
     thread_count = 5
     cookie = CookieLib()

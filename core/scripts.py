@@ -1,7 +1,7 @@
 import os
 import json
-from core.Engine import MatchObject, CustomRequestBuilder, RequestBuilder
-from core.Utils import has_seen_before, response_to_dict
+from core.engine import MatchObject, CustomRequestBuilder, RequestBuilder
+from core.utils import has_seen_before, response_to_dict
 import sys
 import logging
 try:

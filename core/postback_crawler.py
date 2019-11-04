@@ -1,6 +1,6 @@
 import re
 import requests
-from core.Utils import aspx_strip_internal, params_from_str
+from core.utils import aspx_strip_internal, params_from_str
 import json
 import random
 import string
@@ -110,11 +110,11 @@ class Crawler:
     ]
     postback_re = re.compile(r'__doPostBack\(.*?[\'"](.+?)[\'"\\]\s*,\s*[\'"](.*?)[\'"\\]', re.IGNORECASE)
     page_re = [
-        re.compile('window\.location\s*=\s*[\'"](.+?)[\'"]'),
-        re.compile('document\.location\s*=\s*[\'"](.+?)[\'"]'),
-        re.compile('document\.location\.href\s*=\s*[\'"](.+?)[\'"]'),
-        re.compile('window\.location\.replace\([\'"](.+?)[\'"]'),
-        re.compile('http-equiv="refresh.+?URL=[\'"](.+?)[\'"]')
+        re.compile(r'window\.location\s*=\s*[\'"](.+?)[\'"]'),
+        re.compile(r'document\.location\s*=\s*[\'"](.+?)[\'"]'),
+        re.compile(r'document\.location\.href\s*=\s*[\'"](.+?)[\'"]'),
+        re.compile(r'window\.location\.replace\([\'"](.+?)[\'"]'),
+        re.compile(r'http-equiv="refresh.+?URL=[\'"](.+?)[\'"]')
     ]
     todo = []
     seen = []
