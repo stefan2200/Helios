@@ -1,4 +1,6 @@
 import copy
+import string
+import random
 try:
     from urllib import quote_plus
 except ImportError:
@@ -11,6 +13,10 @@ def multi_to_lower(old_dict, also_values=False):
     for key in old_dict:
         new[key.lower()] = old_dict[key].lower() if also_values else old_dict[key]
     return new
+
+
+def random_string(length=5, pool=string.ascii_lowercase):
+    return ''.join(random.choice(pool) for i in range(length))
 
 
 # extract all parameters from a string (url parameters or post data parameters)

@@ -5,7 +5,7 @@ try:
 except ImportError:
     import urllib.parse as urlparse
 import modules.module_base
-from core.Utils import requests_response_to_dict
+from core.Utils import requests_response_to_dict, random_string
 
 
 class Module(modules.module_base.Base):
@@ -39,6 +39,12 @@ class Module(modules.module_base.Base):
 
         for f in list_urls:
             working = 0
+            ffurl = "%s.%s" % (f, random_string())
+            result_fp = self.send(ffurl, self.headers, self.cookies)
+            if result_fp and result_fp.url == ffurl and result_fp.status_code == 200:
+                # site responds 200 to random extension, ignore the URL
+                continue
+
             for p in self.possibilities:
                 if working > 3:
                     # if something is creating false positives
