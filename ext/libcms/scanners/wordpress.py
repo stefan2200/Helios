@@ -1,7 +1,10 @@
-import sys, os
-sys.path.insert(0, os.path.dirname(__file__))
+import sys
+import os
+import re
+import json
+
 import cms_scanner
-import re, json
+
 try:
     from urlparse import urljoin, urlparse
 except ImportError:
@@ -22,14 +25,14 @@ class Scanner(cms_scanner.Scanner):
     def get_version(self, url):
         text = self.get(url)
         if text:
-            version_check_1 = re.search('<meta name="generator" content="wordpress (\d+\.\d+\.\d+)', text.text, re.IGNORECASE)
+            version_check_1 = re.search(r'<meta name="generator" content="wordpress ([\d\.]+)', text.text, re.IGNORECASE)
             if version_check_1:
                 self.logger.info("Detected %s version %s on %s trough generator tag" % (self.name, version_check_1.group(1), url))
                 return version_check_1.group(1)
         check2_url = urljoin(url, 'wp-admin.php')
         text = self.get(check2_url)
         if text:
-            version_check_2 = re.search('wp-admin\.min\.css\?ver=(\d+\.\d+\.\d+)', text.text, re.IGNORECASE)
+            version_check_2 = re.search(r'wp-admin\.min\.css\?ver=([\d\.]+)', text.text, re.IGNORECASE)
             if version_check_2:
                 self.logger.info("Detected %s version %s on %s trough admin css" % (self.name, version_check_2.group(1), url))
                 return version_check_2.group(1)
@@ -47,6 +50,7 @@ class Scanner(cms_scanner.Scanner):
         plugins = self.read_plugins()
         plugin_data = {}
         vulns = {}
+        self.logger.debug("Checking %s for %d plugins" % (base, len(plugins)))
         for plugin in plugins:
             plugin_version = self.get_plugin_version(base, plugin)
             if plugin_version:
@@ -112,7 +116,7 @@ class Scanner(cms_scanner.Scanner):
         if get_result and get_result.status_code == 200:
             self.logger.debug("Plugin %s exists, getting version from readme.txt" % plugin)
             text = get_result.text
-            get_version = re.search('(?s)changelog.+?(\d+\.\d+(?:\.\d+)?)', text, re.IGNORECASE)
+            get_version = re.search(r'(?s)changelog.+?(\d+\.\d+(?:\.\d+)?)', text, re.IGNORECASE)
             if get_version:
                 return get_version.group(1)
         return None

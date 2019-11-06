@@ -108,12 +108,15 @@ class HTTPParser:
         tree = []
         if input and len(input):
             for row in input.strip().split('\n'):
-                method, host, url, data = row.split('\t')
-                url = "http%s://%s%s" % ("s" if use_https else "", host, url)
-                if method == "POST" and data != "0":
-                    tree.append([url, HTTPParser.params_from_str(data)])
-                else:
-                    tree.append([url, None])
+                try:
+                    method, host, url, data = row.split('\t')
+                    url = "http%s://%s%s" % ("s" if use_https else "", host, url)
+                    if method == "POST" and data != "0":
+                        tree.append([url, HTTPParser.params_from_str(data)])
+                    else:
+                        tree.append([url, None])
+                except Exception as e:
+                    pass
         return tree
 
     @staticmethod

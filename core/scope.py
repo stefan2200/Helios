@@ -49,8 +49,8 @@ class Scope:
         for sub_scope in self.scopes:
             if "*" in sub_scope:
                 return fnmatch.fnmatch(parsed.netloc, sub_scope)
-            if sub_scope == parsed.netloc and self.allow_cross_port:
+            if sub_scope == parsed.netloc:
                 return True
-        if self.allow_subdomains and parsed.netloc.startswith(self.host):
+        if self.allow_subdomains and parsed.netloc.endswith(self.host):
             return True
         return False

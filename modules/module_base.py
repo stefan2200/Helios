@@ -14,6 +14,14 @@ class Base:
     input = ""
     output = ""
     severity = 0
+    verify = True
+    scope = None
+    headers = {
+
+    }
+    cookies = {
+
+    }
 
     def run(self, url, data, headers, cookies):
         pass

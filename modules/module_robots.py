@@ -33,7 +33,7 @@ class Module(modules.module_base.Base):
                 newurl = newurl.replace('$', '')
                 if newurl == url:
                     continue
-                if newurl not in output:
+                if newurl not in output and self.scope.in_scope(newurl):
                     output.append(newurl)
         return output
 

@@ -15,6 +15,7 @@ The current version can detect the following vulnerabilities:
 - File-inclusion
     - Local file inclusion
     - Remote file inclusion
+- File uploads
 - Command Injection
 - Backup-files
 - Generic error disclosure
@@ -114,13 +115,13 @@ optional arguments:
 
 
 Crawl and scan an entire domain
-helios.py -u "http://example.com/" -c -s --scripts
+helios.py -u "http://example.com/" -c -s
 
 Safe scan
 helios.py -u "http://example.com/" -c -s --options "passive,discovery" --adv
 
-Full scan
-helios.py -u "http://example.com/" -a --driver --options all --max-urls 1000
+Full scan (with unsafe scripts)
+helios.py -u "http://example.com/" -a --options all --max-urls 1000
 
 Scan a single URL
 helios.py -u "http://example.com/vuln.php?id=1" -s
@@ -134,9 +135,9 @@ helios.py -u "http://example.com/" --msf
 
 # How to use (Module Crawler)
 ```python
-from helios import Crawler
+from helios.core import crawler
 # create new crawler class
-c = Crawler()
+c = crawler()
 # run the crawler against the start url
 c.run("https://example.com/")
 # print all visited links
@@ -145,12 +146,12 @@ print(c.scraped_pages)
 
 # How to use (Module Scanner)
 ```python
-from helios import Parser
-from helios import Request
+from helios.core import parser
+from helios.core import request
 # create new ScriptEngine class
-s = Parser.ScriptEngine()
+s = parser.ScriptEngine()
 # create an Request object
-req = Request.Request(url="https://example.com/test.php?id=1", data={'test': 'value'})
+req = request.Request(url="https://example.com/test.php?id=1", data={'test': 'value'})
 # send the initial request
 req.run()
 s.run_scripts(req)
@@ -160,8 +161,6 @@ print(s.results)
 
 # What is next?
 - create a fully working post back crawler / scanner for ASPX/JSP type sites
-- multiple start URL's / multiple scopes
-- improve logging
 - generic detection script
 - migrate CMS scripts to webapp scripts
 

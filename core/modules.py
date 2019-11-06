@@ -11,8 +11,10 @@ class CustomModuleLoader:
     logger = None
     options = None
     writer = None
+    scope = None
+    sslverify = False
 
-    def __init__(self, folder='modules', blacklist=[], options=None, logger=logging.INFO, database=None):
+    def __init__(self, folder='modules', blacklist=[], options=None, logger=logging.INFO, database=None, scope=None):
         self.blacklist.extend(blacklist)
         self.options = options
         self.folder = folder
@@ -24,6 +26,7 @@ class CustomModuleLoader:
         ch.setFormatter(formatter)
         self.logger.addHandler(ch)
         self.logger.debug("Loading custom modules")
+        self.scope = scope
         self.load_modules()
         self.writer = database
 
@@ -41,11 +44,14 @@ class CustomModuleLoader:
             else:
                 if 'dangerous' in module.module_types:
                     self.logger.debug(
-                        "Disabling script %s because dangerous flag is present, use --options all or add the dangerous flag to override" % (
+                        "Disabling script %s because dangerous flag is present, "
+                        "use --options all or add the dangerous flag to override" % (
                             module.name))
                     return
+            module.scope = self.scope
+            module.verify = self.sslverify
             self.modules.append(module)
-            self.logger.info("Enabled module: %s" % f)
+            self.logger.debug("Enabled module: %s" % f)
         except ImportError as e:
             self.logger.warning("Error importing module:%s %s" % (f, str(e)))
         except Exception as e:

@@ -93,7 +93,9 @@ class Helios:
         if self.options.use_adv_scripts or self.options.allin:
             loader = modules.CustomModuleLoader(options=scanoptions,
                                                 logger=self.logger.getEffectiveLevel(),
-                                                database=self.db)
+                                                database=self.db,
+                                                scope=scope)
+            loader.sslverify = self.options.sslverify
 
         todo = []
         c = Crawler(base_url=start_url, logger=self.logger.getEffectiveLevel())
