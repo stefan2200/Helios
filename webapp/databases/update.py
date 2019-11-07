@@ -32,6 +32,9 @@ config = {
     },
     'concrete5': {
         'Concrete5': 'https://www.cvedetails.com/vulnerability-list/vendor_id-11506/product_id-23747/Concrete5-Concrete5.html'
+    },
+    'php': {
+        'PHP': 'https://www.cvedetails.com/vulnerability-list/vendor_id-74/product_id-128/PHP-PHP.html'
     }
 }
 

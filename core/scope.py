@@ -44,7 +44,7 @@ class Scope:
                 return False
             if not self.is_https and parsed.schema != "http":
                 return False
-        if parsed.netloc == self.host:
+        if parsed.hostname == self.host:
             return True
         for sub_scope in self.scopes:
             if "*" in sub_scope:
