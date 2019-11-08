@@ -37,8 +37,8 @@ class CookieLib:
             "is_secure": secure,
             "is_httponly": httponly
         }
-        if not cookie_key in self.cookies:
-            print("[COOKIELIB] Cookie %s=%s was set" % (cookie_key, cookie_value))
+        # if not cookie_key in self.cookies:
+        #    print("[COOKIELIB] Cookie %s=%s was set" % (cookie_key, cookie_value))
 
         self.cookies[cookie_key] = cookie_value
 

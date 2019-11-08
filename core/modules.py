@@ -13,6 +13,8 @@ class CustomModuleLoader:
     writer = None
     scope = None
     sslverify = False
+    headers = {}
+    cookies = {}
 
     def __init__(self, folder='modules', blacklist=[], options=None, logger=logging.INFO, database=None, scope=None):
         self.blacklist.extend(blacklist)
@@ -50,6 +52,8 @@ class CustomModuleLoader:
                     return
             module.scope = self.scope
             module.verify = self.sslverify
+            module.headers = self.headers
+            module.cookies = self.cookies
             self.modules.append(module)
             self.logger.debug("Enabled module: %s" % f)
         except ImportError as e:

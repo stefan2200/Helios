@@ -10,6 +10,7 @@ class BaseAPP:
     logger = None
     app_url = None
     scope = None
+    headers = {}
 
     def detect(self, url):
         return False
@@ -60,6 +61,8 @@ class BaseAPP:
     def send(self, url, data=None, headers={}, redirects=True):
         result = None
         cookies = self.cookies
+        for k in self.headers:
+            headers[k] = self.headers[k]
         try:
             if data:
                 result = requests.get(url, data=data, headers=headers, cookies=cookies, allow_redirects=redirects, verify=False)

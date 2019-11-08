@@ -54,6 +54,7 @@ class Crawler:
     write_output = True
     scope = None
     base_url = None
+    login = None
 
     def __init__(self, base_url, agent=None, logger=logging.INFO, scope=None):
         self.base_url = base_url
@@ -109,6 +110,10 @@ class Crawler:
                     self.logger.debug("Url %s will be ignored because key variation limit is exceeded" % url)
                     return
                 self.url_variations.append([url, checksum])
+        if self.login and 'logout' in url.lower():
+            self.ignored.append(url)
+            self.logger.debug("Url %s will be ignored because login is active" % url)
+            return
 
         # if local link or link on same site root
         if url.startswith('/') or url.startswith(self.root_url):
@@ -162,19 +167,26 @@ class Crawler:
 
     def post_scrape_callback(self, res):
         result = res.result()
-        if result and result.status_code == 200:
-            self.parse_links(result.text, result.url)
-            self.scrape_info(result.text, result.url)
-            try:
-                self.cookie.autoparse(result.headers)
-            except Exception as e:
-                print(str(e))
+        if result:
+            if result.status_code == 200:
+                self.parse_links(result.text, result.url)
+                self.scrape_info(result.text, result.url)
+                try:
+                    self.cookie.autoparse(result.headers)
+                except Exception as e:
+                    self.logger.warning("Error processing page cookies: %s" % str(e))
+            if str(result.status_code).startswith('3'):
+                if 'Location' in result.headers:
+                    self.parse_url(result.headers['Location'], result.url)
 
     def scrape_page(self, url):
         url, data = url
         try:
-            res = requests.get(url, timeout=(3, 30), cookies=self.cookie.cookies, allow_redirects=False, headers=self.headers, verify=False) if not data else requests.post(url, data, cookies=self.cookie.cookies, allow_redirects=False, timeout=(3, 30), verify=False)
-            return res
+            if data:
+                return requests.post(url, data, cookies=self.cookie.cookies,
+                                     allow_redirects=False, headers=self.headers,  timeout=(3, 30), verify=False)
+            return requests.get(url, timeout=(3, 30), cookies=self.cookie.cookies,
+                                allow_redirects=False, headers=self.headers, verify=False)
         except requests.RequestException:
             return
         except Exception as e:
