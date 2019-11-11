@@ -40,9 +40,9 @@ class Scope:
                  self.allow_cross_schema and parsed.port in [80, 443]):
             return False
         if not self.allow_cross_schema:
-            if self.is_https and parsed.schema != "https":
+            if self.is_https and parsed.scheme != "https":
                 return False
-            if not self.is_https and parsed.schema != "http":
+            if not self.is_https and parsed.scheme != "http":
                 return False
         if parsed.hostname == self.host:
             return True

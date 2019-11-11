@@ -90,7 +90,7 @@ class Helios:
         login = LoginAction(logger=self.logger.getEffectiveLevel())
         pre_run = login.pre_parse(self.options)
         if pre_run:
-            self.scan_cookies = dict(login.cookies)
+            self.scan_cookies = dict(login.session_obj.cookies)
         scanoptions = []
         if self.options.custom_options:
             scan_vars = self.options.custom_options.split(',')
@@ -120,7 +120,10 @@ class Helios:
             if pre_run:
                 c.login = True
                 # set cookies from Login module
-                c.cookie.autoparse(pre_run.headers)
+                cookies = dict(login.session_obj.cookies)
+                if cookies and len(cookies):
+                    self.logger.debug("Setting crawler cookies from login module: %s" % str(cookies))
+                    c.cookie.append(cookies)
             c.thread_count = self.thread_count
             c.max_urls = int(self.options.maxurls)
             c.scope = scope
@@ -243,6 +246,10 @@ class Helios:
                 queries = monster.create_queries()
                 monster.run_queries(queries)
                 meta = monster.results
+                for working in meta['working']:
+                    msf_module, msf_output = working
+                    self.db.put(result_type="Metasploit", script=msf_module,
+                                severity=3, text=json.dumps(msf_output))
 
         scan_tree = {
             'start': start_time,

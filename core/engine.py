@@ -42,6 +42,11 @@ class CookieLib:
 
         self.cookies[cookie_key] = cookie_value
 
+    def append(self, cookieset):
+        for key in cookieset:
+            self.parsed[key] = {"value": cookieset[key], "is_secure": False, "is_httponly": True}
+            self.cookies[key] = cookieset[key]
+
     def get(self):
         outstr = ""
         if len(self.cookies) == 0:
