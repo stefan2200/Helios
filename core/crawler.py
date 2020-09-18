@@ -115,6 +115,10 @@ class Crawler:
             self.logger.debug("Url %s will be ignored because login is active" % url)
             return
 
+        if 'manual/' in url.lower():
+            self.ignored.append(url)
+            return
+
         # if local link or link on same site root
         if url.startswith('/') or url.startswith(self.root_url):
             url = urlparse.urljoin(rooturl, url)
@@ -242,9 +246,143 @@ class FormDataToolkit:
         return hashlib.md5('&'.join(keys).encode('utf-8')).hexdigest()
 
 
+# class for fast dir/file discovery using word list
+class WebFinder:
+    logger = None
+    pool = Queue(maxsize=0)
+    executor = None
+    ok_status_codes = [200, 204, 301, 302, 307, 401, 403, 500]
+    output = []
+    errors = 0
+    can_use_head = False
+    invalid_text = None
+    thread_count = 20
+    cookies = {}
+    headers = {}
+
+    def __init__(self, url, logger, word_list=None, append=None, ok_status_codes=None, invalid_text=None, threads=20):
+        self.logger = logging.getLogger("WebFinder")
+        self.logger.setLevel(logger)
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setLevel(logger)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        if not self.logger.handlers:
+            self.logger.addHandler(ch)
+        if not os.path.exists(word_list):
+            self.logger.error("Wordlist file %s could not be opened!" % word_list)
+            return
+
+        self.thread_count = threads
+
+        with open(word_list, 'r') as input_file:
+            for line in input_file.readlines():
+                line = line.strip()
+                self.pool.put(urlparse.urljoin(url, line))
+                if append:
+                    for ext in append.split(','):
+                        ext = ext.strip()
+                        if ext.startswith('.'):
+                            ext = ext[1:]
+                        self.pool.put(urlparse.urljoin(url, "%s.%s" % (line, ext)))
+        self.logger.info("Queued %d items for file / directory discovery" % (self.pool.qsize()))
+        if ok_status_codes:
+            self.ok_status_codes = [int(x.strip()) for x in ok_status_codes.split(',')]
+
+        if invalid_text:
+            self.can_use_head = False
+            self.invalid_text = invalid_text
+        else:
+            if self.detect_head(url):
+                self.logger.debug("HEAD method appears to be usable")
+            else:
+                self.logger.debug("HEAD method does not appears to be usable")
+            if self.detect_wildcard(url):
+                self.logger.info("You can supply a 404 text pattern with the --wordlist-404 argument")
+
+        self.run()
+
+    def run(self):
+        with ThreadPoolExecutor(max_workers=self.thread_count) as executor:
+            while 1:
+                if self.errors > 40:
+                    self.logger.error("Giving up because of timeout errors!")
+                    self.pool.empty()
+                    return
+
+                if self.errors > 20:
+                    self.logger.warning("Too many timeouts, waiting 60 seconds")
+                    time.sleep(60)
+
+                try:
+                    url = self.pool.get(timeout=60)
+                    job = executor.submit(self.check, url)
+                    job.add_done_callback(self.result_callback)
+                except Empty:
+                    self.logger.debug("Run done, waiting for threads to finish")
+                    time.sleep(5)
+                    break
+                except KeyboardInterrupt:
+                    self.pool.empty()
+                    break
+
+    def result_callback(self, response):
+        result = response.result()
+        if result is False:
+            return
+        self.errors = 0
+        if self.invalid_text and self.invalid_text not in result.text:
+            self.output.append(result.url)
+            self.logger.info("Discovered: %s [%d]" % (result.url, result.status_code))
+        if result.status_code in self.ok_status_codes:
+            self.output.append(result.url)
+            self.logger.info("Discovered: %s [%d]" % (result.url, result.status_code))
+
+    def detect_wildcard(self, url):
+        try:
+            rand_str = ''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase) for _ in range(15))
+            invalid_url = urlparse.urljoin(url, rand_str)
+            res = requests.get(url=invalid_url, allow_redirects=False)
+            if res.status_code in self.ok_status_codes:
+                self.logger.warning("Response code wildcard. detected %d on URL: %s" % (res.status_code, invalid_url))
+                return True
+        except Exception as e:
+            pass
+        return False
+
+    def detect_head(self, url):
+        try:
+            res = requests.head(url=url, allow_redirects=False)
+            if res.status_code != 405:
+                self.can_use_head = True
+                return True
+        except Exception as e:
+            self.logger.warning("Error detecting HEAD on URL %s: %s" % (url, str(e)))
+            pass
+        return False
+
+    def check(self, url):
+        try:
+            if self.can_use_head:
+                return requests.head(url, allow_redirects=False, headers=self.headers, cookies=self.cookies)
+            else:
+                return requests.get(url, allow_redirects=False, headers=self.headers, cookies=self.cookies)
+
+        except requests.exceptions.ConnectTimeout:
+            self.errors += 1
+            self.pool.put(url)
+            return False
+        except requests.exceptions.ReadTimeout:
+            self.errors += 1
+            self.pool.put(url)
+            return False
+        except Exception as e:
+            self.logger.warning("Warning: URLS %s causes exception: %s" % (url, str(e)))
+            return False
+
+
 # the Extractor class is used to extract forms from HTML
 # the default extract() method is equipped with the functionality to automatically fill in input fields
-# dunno if textarea works :)
 class Extractor:
     body = None
     url = None

@@ -120,6 +120,9 @@ class ScriptEngine:
 
     def run_scripts(self, request):
         for script in self.scripts_passive:
+            if str(script['find']) == "once":
+                if has_seen_before(script['name'], self.results):
+                    continue
             for match in script['matches']:
                 result = match.run(request.response)
                 if result:
@@ -134,6 +137,9 @@ class ScriptEngine:
                         {"script": script['name'], "match": result, "data": response_to_dict(request.response)})
         if self.can_exploit:
             for script in self.scripts_active:
+                if str(script['find']) == "once":
+                    if has_seen_before(script['name'], self.results):
+                        continue
                 try:
                     r = RequestBuilder(
                         req=request,

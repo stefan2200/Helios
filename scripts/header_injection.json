@@ -1,0 +1,21 @@
+{
+  "name": "Header Injection (newline)",
+  "run_at": "request",
+  "find": "many",
+  "severity": 3,
+  "options": ["injection"],
+  "request": ["parameters", "cookies"],
+  "data": {
+    "inject_value": "{crlf}X-Helios-Injectedheader: 1"
+  },
+  "matches": [
+    {
+      "type": "exists",
+      "location": "headers",
+      "match": "x-helios-injectedheader",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

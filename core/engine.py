@@ -198,6 +198,7 @@ class RequestBuilder:
         self.value = inject_value
         self.m = matchobject
         self.value = self.value.replace('{null}', '\0')
+        self.value = self.value.replace('{crlf}', '\r\n')
         self.name = name
 
     def execute(self, new_request):

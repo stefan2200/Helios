@@ -13,7 +13,7 @@ import requests
 from core.scripts import *
 from core.request import Request
 from core.login import LoginAction
-from core.crawler import Crawler
+from core.crawler import Crawler, WebFinder
 from core.utils import uniquinize
 from core.database import SQLiteWriter
 from core.webapps import WebAppModuleLoader
@@ -145,6 +145,17 @@ class Helios:
                     for link in links:
                         self.logger.debug("Adding link %s from post scripts" % link)
                         c.parse_url(link, link)
+
+            if self.options.wl_file:
+                wf = WebFinder(url=start_url,
+                               logger=self.logger.getEffectiveLevel(),
+                               word_list=self.options.wl_file,
+                               append=self.options.wl_ext,
+                               ok_status_codes=self.options.wl_codes,
+                               invalid_text=self.options.wl_404,
+                               threads=self.thread_count)
+                for wf_result in wf.output:
+                    c.parse_url(wf_result, start_url)
 
             self.logger.info("Starting Crawler")
             c.run_scraper()
@@ -304,6 +315,16 @@ if __name__ == "__main__":
                                dest='scopes', default=None)
     group_crawler.add_argument('--scope-options', help='Various scope options',
                                dest='scope_options', default=None)
+
+    group_crawler.add_argument('--wordlist', help='Additional web discovery wordlist',
+                               dest='wl_file', default=None)
+    group_crawler.add_argument('--wordlist-ext',
+                               help='Additional comma separated web discovery extensions (requires wordlist)',
+                               dest='wl_ext', default=None)
+    group_crawler.add_argument('--wordlist-404', help='Custom 404 text pattern (default: use status code)',
+                               dest='wl_404', default=None)
+    group_crawler.add_argument('--wordlist-status-codes', help='Custom comma separated found status codes',
+                               dest='wl_codes', default=None)
 
     group_scanner = parser.add_argument_group(title="Scanner Options")
     group_scanner.add_argument('-s', '--scan', help='Enable the scanner', dest='scanner',
