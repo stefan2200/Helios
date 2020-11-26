@@ -1,0 +1,18 @@
+{
+  "name": "Server Backend System exposure",
+  "run_at": "response",
+  "find": "once",
+  "severity": 1,
+  "options": ["passive"],
+  "request": null,
+  "matches": [
+    {
+      "type": "exists",
+      "location": "headers",
+      "match": "x-powered-by",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

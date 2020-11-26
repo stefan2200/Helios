@@ -1,0 +1,22 @@
+{
+  "name":"Admin Login Page",
+  "run_at":"fs",
+  "find":"once",
+  "severity": 0,
+  "options": ["discovery"],
+  "request":null,
+  "data":{
+    "url":"administrator\/"
+  },
+  "matches":[
+    {
+      "type":"regex",
+      "location":"body",
+      "match":"(?s)admin.+?login",
+      "name":"Administrative Login Portal found",
+      "options":[
+        "ignore_case"
+      ]
+    }
+  ]
+}

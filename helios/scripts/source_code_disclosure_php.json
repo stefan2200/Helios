@@ -1,0 +1,19 @@
+{
+  "name": "Source Code Disclosure (PHP)",
+  "run_at": "response",
+  "find": "many",
+  "severity": 3,
+  "options": ["passive"],
+  "request": null,
+  "matches": [
+    {
+      "type": "regex",
+      "location": "body",
+      "match": "(?s)(<\\?php.+?\\?>)",
+      "options": [
+        "ignore_case",
+        "strip_newlines"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "name":"SQL Injection",
+  "run_at":"request",
+  "find":"many",
+  "severity": 3,
+  "options": ["injection"],
+  "request":[
+    "parameters",
+    "cookies"
+  ],
+  "data":{
+    "inject_value":"{value}'"
+  },
+  "matches":[
+    {
+      "type":"regex",
+      "location":"body",
+      "match":"error.+?sql",
+      "name":"SQL Error in response",
+      "options":[
+        "ignore_case"
+      ]
+    },
+    {
+      "type":"regex",
+      "location":"body",
+      "match":"sql.+?error",
+      "name":"SQL Error in response",
+      "options":[
+        "ignore_case"
+      ]
+    },
+    {
+      "type":"regex",
+      "location":"body",
+      "match":"(<b>warning</b>.+?sql.+?)<br",
+      "name":"SQL Error in response",
+      "options":[
+        "ignore_case"
+      ]
+    }
+  ]
+}

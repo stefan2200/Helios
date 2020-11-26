@@ -1,0 +1,25 @@
+{
+  "name": "Admin directory found",
+  "run_at": "fs",
+  "find": "once",
+  "severity": 0,
+  "options": ["discovery"],
+  "data": {
+    "url": "admin/",
+    "options": [
+      "rootdir"
+    ]
+  },
+  "request": null,
+  "matches": [
+    {
+      "type": "equals",
+      "location": "status_code",
+      "match": "200",
+      "name": "Admin directory found",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

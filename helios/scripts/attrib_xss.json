@@ -1,0 +1,22 @@
+{
+  "name": "Cross-Site Scripting (XSS)",
+  "run_at": "request",
+  "find": "many",
+  "severity": 3,
+  "options": ["injection", "dangerous"],
+  "request": ["parameters", "cookies"],
+  "data": {
+    "inject_value": "\" onmouseover=\"xss()\" bad=\""
+  },
+  "matches": [
+    {
+      "type": "regex",
+      "location": "body",
+      "match": "\\=\"[^\"]*\" onmouseover\\=\"xss\\(\\)\"",
+      "name": "Reflected HTML in tag attribute",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

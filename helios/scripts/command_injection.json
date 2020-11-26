@@ -1,0 +1,22 @@
+{
+  "name": "Command Injection (Unix)",
+  "run_at": "request",
+  "find": "many",
+  "severity": 3,
+  "options": ["injection"],
+  "request": ["parameters", "cookies"],
+  "data": {
+    "inject_value": "{value};id"
+  },
+  "matches": [
+    {
+      "type": "regex",
+      "location": "body",
+      "match": "(uid=\\d+.+?groups=\\d+.+)[<\\s]?",
+      "name": "ID command output match",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

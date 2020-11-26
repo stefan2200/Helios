@@ -1,0 +1,22 @@
+{
+  "name": "Local File Inclusion (Absolute Path)",
+  "run_at": "request",
+  "find": "many",
+  "severity": 3,
+  "options": ["injection"],
+  "request": ["parameters", "cookies"],
+  "data": {
+    "inject_value": "/etc/passwd"
+  },
+  "matches": [
+    {
+      "type": "contains",
+      "location": "body",
+      "match": "0:0:root",
+      "name": "/etc/passwd disclosure",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "WP-Admin login portal",
+  "run_at": "fs",
+  "options": ["discovery"],
+  "find": "once",
+  "severity": 0,
+  "data": {
+    "url": "wp-login.php",
+    "options": [
+      "rootdir"
+    ]
+  },
+  "request": null,
+  "matches": [
+    {
+      "type": "regex",
+      "location": "body",
+      "match": "wordpress.+?login",
+      "name": "WordPress Login portal found",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

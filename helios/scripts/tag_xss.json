@@ -1,0 +1,22 @@
+{
+  "name": "Cross-Site Scripting (XSS)",
+  "run_at": "request",
+  "find": "many",
+  "severity": 3,
+  "request": ["parameters", "cookies"],
+  "options": ["injection", "dangerous"],
+  "data": {
+    "inject_value": "<xss></xss>"
+  },
+  "matches": [
+    {
+      "type": "regex",
+      "location": "body",
+      "match": "<xss></xss>",
+      "name": "Reflected HTML in body",
+      "options": [
+        "ignore_case"
+      ]
+    }
+  ]
+}

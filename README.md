@@ -2,8 +2,6 @@
 # Helios
 Multi-threaded open-source web application security scanner
 
-## Supports Python 2.x and Python 3.x
-
 The current version can detect the following vulnerabilities:
 - SQL-Injections
     - Error Based
@@ -34,28 +32,21 @@ The current version can detect the following vulnerabilities:
     - MODX Revolution
 - Automatic launching of Metasploit modules (through msfrpc)
     - unsafe at the moment
-    
-
-# Features
-- Uses multi-threading (very very fast)
-- Processes AJAX/XHR requests
-- Widely adaptable
-- No laggy interfaces, 100% console based
 
 
 # How to install
 ```
 git clone https://github.com/stefan2200/Helios.git
-pip install -r requirements.txt
-python helios.py -h
+cd Helios
+pip setup.py install
 
-cd webapps/databases
-python update.py -a
+helios-update-db
+helios -h
 ```
 
 # How to use (Command Line)
 ```
-usage: helios.py: args [-h] [-u URL] [--urls URLS]
+usage: helios: args [-h] [-u URL] [--urls URLS]
                                  [--user-agent USER_AGENT] [-a] [-o OUTFILE]
                                  [-d] [--driver-path DRIVER_PATH]
                                  [--show-driver] [--interactive] [--no-proxy]
@@ -100,9 +91,17 @@ Crawler Options:
   -c, --crawler         Enable the crawler
   --max-urls MAXURLS    Set max urls for the crawler
   --scopes SCOPES       Extra allowed scopes, comma separated hostnames (* can
-                        be used to wildcard)
+                        be used as wildcard)
   --scope-options SCOPE_OPTIONS
-                        Various scope options
+                        Various scope options (additional info in wiki)
+  --wordlist WL_FILE    Additional web discovery wordlist
+  --wordlist-ext WL_EXT
+                        Additional comma separated web discovery extensions
+                        (requires wordlist)
+  --wordlist-404 WL_404
+                        Custom 404 text pattern (default: use status code)
+  --wordlist-status-codes WL_CODES
+                        Custom comma separated found status codes
 
 Scanner Options:
   -s, --scan            Enable the scanner
@@ -150,6 +149,7 @@ Metasploit Options:
 
 
 
+
 Crawl and scan an entire domain
 helios.py -u "http://example.com/" -c -s
 
@@ -169,34 +169,4 @@ Pwn a web server
 helios.py -u "http://example.com/" --msf
 ```
 
-# How to use (Module Crawler)
-```python
-from helios.core import crawler
-# create new crawler class
-c = crawler()
-# run the crawler against the start url
-c.run("https://example.com/")
-# print all visited links
-print(c.scraped_pages)
-```
-
-# How to use (Module Scanner)
-```python
-from helios.core import parser
-from helios.core import request
-# create new ScriptEngine class
-s = parser.ScriptEngine()
-# create an Request object
-req = request.Request(url="https://example.com/test.php?id=1", data={'test': 'value'})
-# send the initial request
-req.run()
-s.run_scripts(req)
-# print all results
-print(s.results)
-```
-
-# What is next?
-- create a fully working post back crawler / scanner for ASPX/JSP type sites
-- generic detection script
-- migrate CMS scripts to webapp scripts
-
+Helios is built for authorized use only!

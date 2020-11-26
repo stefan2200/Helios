@@ -1,0 +1,22 @@
+{
+  "name":"web.config discovery",
+  "run_at":"fs",
+  "find":"once",
+  "severity": 3,
+  "options": ["discovery"],
+  "request":null,
+  "data":{
+    "url":"web.config"
+  },
+  "matches":[
+    {
+      "type":"equals",
+      "location":"status_code",
+      "match":"200",
+      "name":"web.config match code 200",
+      "options":[
+        "ignore_case"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name":"composer.json discovery",
+  "run_at":"fs",
+  "find":"once",
+  "severity": 2,
+  "options": ["discovery"],
+  "request":null,
+  "data":{
+    "url":"composer.json"
+  },
+  "matches":[
+    {
+      "type":"equals",
+      "location":"status_code",
+      "match":"200",
+      "name":"composer.json match code 200",
+      "options":[
+        "ignore_case"
+      ]
+    }
+  ]
+}

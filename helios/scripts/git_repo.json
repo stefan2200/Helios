@@ -1,0 +1,22 @@
+{
+  "name":"GIT repository found",
+  "run_at":"fs",
+  "find":"once",
+  "severity": 3,
+  "options": ["discovery"],
+  "request":null,
+  "data":{
+    "url":".git/index"
+  },
+  "matches":[
+    {
+      "type":"equals",
+      "location":"status_code",
+      "match":"200",
+      "name":".git/index match code 200",
+      "options":[
+        "ignore_case"
+      ]
+    }
+  ]
+}
