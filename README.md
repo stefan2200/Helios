@@ -35,6 +35,14 @@ The current version can detect the following vulnerabilities:
 
 
 # How to install
+The recommended way
+```
+pip install Helios-Scanner
+helios-update-db
+helios -h
+```
+
+The manual way
 ```
 git clone https://github.com/stefan2200/Helios.git
 cd Helios
@@ -43,6 +51,7 @@ pip setup.py install
 helios-update-db
 helios -h
 ```
+Please grab a coffee when the CVE database is updating, it might take a while
 
 # How to use (Command Line)
 ```
